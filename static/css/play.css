@@ -1,11 +1,9 @@
-
 .info-container {
     margin-top: 5%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 20px;
-
 }
 
 .section {
@@ -26,16 +24,29 @@
     height: 80px;
     object-fit: cover;
     margin-right: 10px;
-    border-radius: 50%;
+    margin-left: 10px;
 }
 
 .info {
     flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .info h3 {
-    margin: 0;
+    margin: 0 0 0 10px;
     font-size: 18px;
+}
+
+.button-group {
+    margin-right: 20px;
+    display: flex;
+    gap: 10px; /* Add some space between the buttons */
+}
+
+.btn {
+    /* Add any specific styling for buttons if needed */
 }
 
 .info p {
