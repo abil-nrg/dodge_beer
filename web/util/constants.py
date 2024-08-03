@@ -34,3 +34,8 @@ class CONSTANTS:
     NO_SAVE = "NO_SAVE"
     NONE = "NONE"
 
+    ALLOWED_PHOTO_EXTENSIONS = ['jpg', 'jpeg', 'png']
+    UPLOAD_FOLDER = os.path.join(root_dir, "static", "images")
+
+    IMAGE_EXTENSION = ".png"
+    DEFAULT_IMAGE = "images/drunk.jpg"

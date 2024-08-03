@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="https://html5-templates.com/" />
+    <title>Dodge Beer</title>
+    <meta name="description" content="Simplified Bootstrap template with sticky menu">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link href="{{ url_for('static', filename = 'css/sticky-menu.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename = 'css/create_team.css') }}" rel="stylesheet">
+</head>
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Dodge Beer</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('create_player') }}">Create Player</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('create_team') }}">Create Team</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('new_game') }}">New Game</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <!-- Welcome   -->
+    <section id="info" class="info-section">
+      <div class="container form-cont mt-5">
+        <form action="{{ url_for('create_team_api') }}" method="get">
+            <div class="mb-3">
+                <label for="name_input" class="form-label">Team Name</label>
+                <input id="name_input" name="team_name" class="form-control" type="text" placeholder="Team name here" required>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select player-select" id="floatingSelect1" name="player1" aria-label="Floating label select example">
+                    <option selected>Select player 1</option>
+                    {% for player in players %}
+                        <option value="{{ player }}">{{ player }}</option>
+                    {% endfor %}
+                </select>
+                <label for="floatingSelect1">Select Player 1</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select player-select" id="floatingSelect2" name="player2" aria-label="Floating label select example">
+                    <option selected>Select player 2</option>
+                    {% for player in players %}
+                        <option value="{{ player }}">{{ player }}</option>
+                    {% endfor %}
+                </select>
+                <label for="floatingSelect2">Select Player 2</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select player-select" id="floatingSelect3" name="player3" aria-label="Floating label select example">
+                    <option selected>Select player 3</option>
+                    {% for player in players %}
+                        <option value="{{ player }}">{{ player }}</option>
+                    {% endfor %}
+                </select>
+                <label for="floatingSelect3">Select Player 3</label>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
+    </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selects = document.querySelectorAll('.player-select');
+
+            selects.forEach(select => {
+                select.addEventListener('change', function() {
+                    updateOptions();
+                });
+            });
+
+            function updateOptions() {
+                const selectedValues = Array.from(selects).map(select => select.value);
+
+                selects.forEach(select => {
+                    const options = select.querySelectorAll('option');
+                    options.forEach(option => {
+                        if (selectedValues.includes(option.value) && option.value !== select.value) {
+                            option.disabled = true;
+                        } else {
+                            option.disabled = false;
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if success flag is set
+            {% if success %}
+                alert('Team created successfully!');
+            {% endif %}
+        });
+    </script>
+</body>
+
+</html>

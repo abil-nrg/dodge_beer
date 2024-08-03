@@ -33,3 +33,6 @@ class Utility:
         reverse_lookup = {team[CONSTANTS.DATA_JSON_TEAM_NAME_KEY]: key for key, team in teams.items()}
         return [reverse_lookup[team_name] for team_name in team_names if team_name in reverse_lookup]
 
+    @staticmethod
+    def allowed_file(filename):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in CONSTANTS.ALLOWED_PHOTO_EXTENSIONS
