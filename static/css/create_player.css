@@ -1,0 +1,19 @@
+.info-section {
+    margin-top: 200px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container{
+    width: auto;
+}
+
+
+.form-cont {
+    background-color: #f8f9fa;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

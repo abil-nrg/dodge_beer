@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="https://html5-templates.com/" />
+    <title>Dodge Beer</title>
+    <meta name="description" content="Simplified Bootstrap template with sticky menu">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link href="{{ url_for('static', filename = 'css/sticky-menu.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename = 'css/play.css') }}" rel="stylesheet">
+</head>
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Dodge Beer</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('create_player') }}">Create Player</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('create_team') }}">Create Team</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('new_game') }}">New Game</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    </nav>
+ <section id="info" class="info-section">
+        <div class="match-info-container">
+            <div class="match-info">
+                <div class="team-names mb-3">{{ team1_name }} vs {{ team2_name }}</div>
+                <div class="d-flex align-items-center">
+                    <div class="round me-3" id="round">Round 1</div>
+                    <button id="incrementRound" class="btn btn-dark">Next</button>
+                </div>
+            </div>
+        </div>
+        <div class="info-container">
+            <!-- Team 1 Section -->
+            <div class="section" data-team="{{ team1_name }}">
+                {% for player, photo in team1.items() %}
+                <div class="row">
+                    <img src="{{ url_for('static', filename=photo) }}" alt="default_profile.png">
+                    <div class="info">
+                        <h3>{{ player }}</h3>
+                        <input type="hidden" name="player" value="{{ player }}">
+                        <div class="button-group">
+                            <button type="button" name="action" value="hit" class="btn btn-success action-button">Hit</button>
+                            <button type="button" name="action" value="save" class="btn btn-warning action-button">Save</button>
+                            <button type="button" name="action" value="miss" class="btn btn-danger action-button">Miss</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Team 2 Section -->
+            <div class="section" data-team="{{ team2_name }}">
+                {% for player, photo in team2.items() %}
+                <div class="row">
+                    <img src="{{ url_for('static', filename=photo) }}" alt="default_profile.png">
+                    <div class="info">
+                        <h3>{{ player }}</h3>
+                        <input type="hidden" name="player" value="{{ player }}">
+                        <div class="button-group">
+                            <button type="button" name="action" value="hit" class="btn btn-success action-button">Hit</button>
+                            <button type="button" name="action" value="save" class="btn btn-warning action-button">Save</button>
+                            <button type="button" name="action" value="miss" class="btn btn-danger action-button">Miss</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="match-info is_done">
+            <form id="playerDoneForm">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="playerSelect" aria-label="Floating label select example">
+                        <option selected disabled>Did they really finish their drink?</option>
+                        {% for player in team2.keys() %}
+                            <option value="{{ player }}">{{ player }}</option>
+                        {% endfor %}
+                        {% for player in team1.keys() %}
+                            <option value="{{ player }}">{{ player }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="playerSelect">Is player done?</label>
+                </div>
+                <button type="button" id="submitPlayerDone" class="btn btn-danger">Submit</button>
+            </form>
+        </div>
+
+    </section>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const gameNum = {{ game_num }};
+        let roundNum = parseInt(document.getElementById("round").innerText.split(" ")[1]);
+
+        // Increment round number when the button is clicked
+        document.getElementById("incrementRound").addEventListener("click", function() {
+            roundNum += 1;
+            document.getElementById("round").innerText = `Round ${roundNum}`;
+        });
+
+        // Handle action button clicks
+        document.querySelectorAll(".action-button").forEach(button => {
+            button.addEventListener("click", function() {
+                const player = this.closest(".info").querySelector("input[name='player']").value;
+                const action = this.value;
+                const teamName = this.closest(".section").getAttribute("data-team");
+
+                const data = {
+                    team_name: teamName,
+                    player_name: player,
+                    round_num: roundNum,
+                    game_num: gameNum,
+                    action: action
+                };
+
+                fetch("{{ url_for('update_game') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+            });
+        });
+
+        // Handle player done submission
+        document.getElementById("submitPlayerDone").addEventListener("click", function() {
+            const playerSelect = document.getElementById("playerSelect");
+            const playerName = playerSelect.value;
+
+            if (!playerName) {
+                alert("Please select a player.");
+                return;
+            }
+
+            const data = {
+                player_name: playerName,
+                round_num: roundNum,
+                game_num: gameNum
+            };
+
+            fetch("{{ url_for('player_is_done') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Disable action buttons for the player who is done
+                document.querySelectorAll(".section").forEach(section => {
+                    section.querySelectorAll(".info").forEach(info => {
+                        const player = info.querySelector("input[name='player']").value;
+                        if (player === playerName) {
+                            info.querySelectorAll(".action-button").forEach(button => {
+                                button.disabled = true;
+                            });
+                        }
+                    });
+                });
+
+                // Disable the selected player in the dropdown
+                playerSelect.querySelectorAll("option").forEach(option => {
+                    if (option.value === playerName) {
+                        option.disabled = true;
+                    }
+                });
+
+                // Reset the form
+                playerSelect.value = ""; // Clear the selected value
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+        });
+    });
+</script>
+
+
+</body>
+</html>
