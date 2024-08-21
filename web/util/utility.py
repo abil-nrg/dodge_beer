@@ -36,3 +36,26 @@ class Utility:
     @staticmethod
     def allowed_file(filename):
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in CONSTANTS.ALLOWED_PHOTO_EXTENSIONS
+
+    @staticmethod
+    def check_if_need_to_flip_team_side(team_side, action):
+        if team_side == CONSTANTS.ATTACK and action == CONSTANTS.SAVE:
+            return Utility.flip_team_side(team_side)
+
+        if team_side == CONSTANTS.DEFENCE and action == CONSTANTS.HIT:
+            return Utility.flip_team_side(team_side)
+
+        return team_side  # don't flip
+
+    @staticmethod
+    def flip_team_side(team_side: str):
+        return CONSTANTS.ATTACK if team_side == CONSTANTS.DEFENCE \
+            else CONSTANTS.DEFENCE
+
+    @staticmethod
+    def flip_both_team_sides(team_sides: dict):
+        new_team_sides = {}
+        for team_num, side in team_sides.items():
+            new_team_sides[team_num] = CONSTANTS.ATTACK if side == CONSTANTS.DEFENCE\
+                                                        else CONSTANTS.DEFENCE
+        return new_team_sides

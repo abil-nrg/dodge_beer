@@ -40,46 +40,46 @@
         <div class="match-info-container">
             <div class="match-info">
                 <div class="team-names mb-3">{{ team1_name }} vs {{ team2_name }}</div>
-                <div class="d-flex align-items-center">
-                    <div class="round me-3" id="round">Round 1</div>
-                    <button id="incrementRound" class="btn btn-dark">Next</button>
-                </div>
             </div>
         </div>
         <div class="info-container">
             <!-- Team 1 Section -->
             <div class="section" data-team="{{ team1_name }}">
                 {% for player, photo in team1.items() %}
-                <div class="row">
-                    <img src="{{ url_for('static', filename=photo) }}" alt="default_profile.png">
-                    <div class="info">
-                        <h3>{{ player }}</h3>
-                        <input type="hidden" name="player" value="{{ player }}">
-                        <div class="button-group">
-                            <button type="button" name="action" value="hit" class="btn btn-success action-button">Hit</button>
-                            <button type="button" name="action" value="save" class="btn btn-warning action-button">Save</button>
-                            <button type="button" name="action" value="miss" class="btn btn-danger action-button">Miss</button>
+                    <div class="row">
+                        <img src="{{ url_for('static', filename=photo) }}" alt="default_profile.png">
+                        <div class="info">
+                            <h3>{{ player }}</h3>
+                            <input type="hidden" name="player" value="{{ player }}">
+                            <div class="button-group">
+                                <button type="button" name="action" value="hit" class="btn btn-primary action-button">Hit</button>
+                                <button type="button" name="action" value="save" class="btn btn-secondary action-button">Save</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    {% if not loop.last %}
+                        <hr>
+                    {% endif %}
                 {% endfor %}
             </div>
 
             <!-- Team 2 Section -->
             <div class="section" data-team="{{ team2_name }}">
                 {% for player, photo in team2.items() %}
-                <div class="row">
-                    <img src="{{ url_for('static', filename=photo) }}" alt="default_profile.png">
-                    <div class="info">
-                        <h3>{{ player }}</h3>
-                        <input type="hidden" name="player" value="{{ player }}">
-                        <div class="button-group">
-                            <button type="button" name="action" value="hit" class="btn btn-success action-button">Hit</button>
-                            <button type="button" name="action" value="save" class="btn btn-warning action-button">Save</button>
-                            <button type="button" name="action" value="miss" class="btn btn-danger action-button">Miss</button>
+                    <div class="row">
+                        <img src="{{ url_for('static', filename=photo) }}" alt="default_profile.png">
+                        <div class="info">
+                            <h3>{{ player }}</h3>
+                            <input type="hidden" name="player" value="{{ player }}">
+                            <div class="button-group">
+                                <button type="button" name="action" value="hit" class="btn btn-primary action-button">Hit</button>
+                                <button type="button" name="action" value="save" class="btn btn-secondary action-button">Save</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    {% if not loop.last %}
+                        <hr>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -105,13 +105,6 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const gameNum = {{ game_num }};
-        let roundNum = parseInt(document.getElementById("round").innerText.split(" ")[1]);
-
-        // Increment round number when the button is clicked
-        document.getElementById("incrementRound").addEventListener("click", function() {
-            roundNum += 1;
-            document.getElementById("round").innerText = `Round ${roundNum}`;
-        });
 
         // Handle action button clicks
         document.querySelectorAll(".action-button").forEach(button => {
@@ -123,7 +116,6 @@
                 const data = {
                     team_name: teamName,
                     player_name: player,
-                    round_num: roundNum,
                     game_num: gameNum,
                     action: action
                 };
@@ -157,7 +149,6 @@
 
             const data = {
                 player_name: playerName,
-                round_num: roundNum,
                 game_num: gameNum
             };
 

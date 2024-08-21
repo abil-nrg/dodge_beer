@@ -28,10 +28,16 @@ class Service:
         return data, new_count
 
     @staticmethod
-    def create_player(name: str):
+    def create_player(name: str) -> str:
         data, player_num = Service.increment_player_count_and_return_data()
         data[CONSTANTS.DATA_JSON_PLAYER_KEY][CONSTANTS.PLAYER_KEY + str(player_num)] = name
         Utility.write_json_data(CONSTANTS.DATA_JSON_FILE, data)
+
+    @staticmethod
+    def add_person_to_photo_file(name, filename):
+        data = Utility.load_json(CONSTANTS.PERSON_TO_PHOTO_JSON_FILE)
+        data[name] = filename
+        Utility.write_json_data(CONSTANTS.PERSON_TO_PHOTO_JSON_FILE, data)
 
     @staticmethod
     def create_team(team_name: str, *player_names: str):
@@ -56,6 +62,7 @@ class Service:
         Utility.write_json_data(CONSTANTS.DATA_JSON_FILE, data)
         return game_num
 
+    # For app.create_team()
     @staticmethod
     def get_players_available() -> list:
         data: dict = Utility.load_json(CONSTANTS.DATA_JSON_FILE)
@@ -78,6 +85,7 @@ class Service:
 
         return player_names_not_in_teams
 
+    # For app.new_game()
     @staticmethod
     def get_all_teams() -> list:
         data: dict = Utility.load_json(CONSTANTS.DATA_JSON_FILE)
@@ -115,19 +123,16 @@ class Service:
         return team_player_names
 
     @staticmethod
-    def get_team_players_photo(player_name: str):
-        static_image = os.path.join("images", player_name + CONSTANTS.IMAGE_EXTENSION)
-        image = os.path.join(CONSTANTS.root_dir, "static", static_image)
-        if os.path.exists(image):
-            return "images/" + player_name + CONSTANTS.IMAGE_EXTENSION
-        else:
-            return CONSTANTS.DEFAULT_IMAGE
-
-    @staticmethod
     def get_player_to_team_photo(player_names: list):
         data = {}
-        for player in player_names:
-            data[player] = Service.get_team_players_photo(player)
+        player_to_photo_dict = Utility.load_json(CONSTANTS.PERSON_TO_PHOTO_JSON_FILE)
+        for player_name in player_names:
+            if player_name in player_to_photo_dict:
+                image_name = "images/" + player_to_photo_dict[player_name]
+            else:
+                image_name = CONSTANTS.DEFAULT_IMAGE
+
+            data[player_name] = image_name
 
         return data
 
@@ -164,6 +169,88 @@ class Service:
         Utility.write_json_data(game_file_path, game_data)
 
     @staticmethod
+    def update_game1(cur_round_moves, round_counter, cur_team_sides, game_num, player_name, team_name, action):
+        team_info, data, team_num = Service.get_team_info(team_name)
+
+        game_file_path = Utility.create_game_file_path(game_num)
+        game_data = Utility.load_json(game_file_path)
+        game_team_num = Utility.create_array_of_playerX({CONSTANTS.GAME_JSON_TEAM1: game_data[CONSTANTS.GAME_JSON_TEAM1],
+                                                         CONSTANTS.GAME_JSON_TEAM2: game_data[CONSTANTS.GAME_JSON_TEAM2]},
+                                                        team_num)[0]  # from game data get team's team num
+
+        cur_team_side = cur_team_sides[game_team_num]  # Attack or Defence
+        try:
+            player_key = Utility.create_array_of_playerX(data[CONSTANTS.DATA_JSON_PLAYER_KEY], player_name)[0]
+        except Exception as e:
+            print("Error with updating the game. Player not found")
+            return
+
+        # figure out which round it is
+        round_num, new_round_moves, new_cur_team_side = Service.get_cur_game_round_num(
+            cur_round_moves, round_counter, cur_team_side, player_key, action)
+
+        cur_round_str = CONSTANTS.ROUND_KEY + str(round_num)
+        if cur_round_str not in game_data:
+           cur_round = {CONSTANTS.GAME_JSON_TEAM1: {}, CONSTANTS.GAME_JSON_TEAM2: {}}
+        else:
+            cur_round = game_data[cur_round_str]
+
+        if player_key not in cur_round[game_team_num]:
+            cur_round[game_team_num][player_key] = []
+
+        player_actions = cur_round[team_num][player_key]
+        player_actions.append(action)
+
+        game_data[cur_round_str] = cur_round
+
+        Utility.write_json_data(game_file_path, game_data)
+
+        return round_num, new_round_moves, new_cur_team_side, game_team_num
+
+    @staticmethod
+    def get_cur_game_round_num(cur_round_moves: dict, round_counter: int, cur_team_side: str, player_key: str,
+                               action: str):
+        if cur_round_moves is None or cur_round_moves == {}:
+            cur_round_moves[player_key] = action
+            return 1, cur_round_moves, cur_team_side  # game just started
+        # the game already started
+
+        # the player didn't do any actions, so same round
+        if player_key not in cur_round_moves:
+            # same round
+            if action == CONSTANTS.HIT and cur_team_side == CONSTANTS.ATTACK:
+                pass
+            elif action == CONSTANTS.SAVE and cur_team_side == CONSTANTS.DEFENCE:
+                pass
+            # new round
+            elif action == CONSTANTS.HIT and cur_team_side == CONSTANTS.DEFENCE:
+                return round_counter + 1, {player_key: action}, Utility.check_if_need_to_flip_team_side(cur_team_side, action)
+
+            elif action == CONSTANTS.SAVE and cur_team_side == CONSTANTS.DEFENCE:
+                return round_counter + 1, {player_key: action}, Utility.check_if_need_to_flip_team_side(cur_team_side, action)
+
+            cur_round_moves[player_key] = action
+            return round_counter, cur_round_moves, cur_team_side
+
+        # the player is in the cur_round_moves
+
+        # same round because player did 2 saves in a row
+        if action == CONSTANTS.SAVE and cur_round_moves[player_key] == CONSTANTS.SAVE:
+            return round_counter, cur_round_moves, cur_team_side
+
+        # new round, and flip sides | never going to happen
+        if action == CONSTANTS.SAVE and cur_round_moves[player_key] == CONSTANTS.HIT:  # last action was attack one
+            return round_counter + 1, {player_key: action}, Utility.check_if_need_to_flip_team_side(cur_team_side, action)
+
+        # new round, and flip sides | balls back
+        if action == CONSTANTS.HIT and cur_round_moves[player_key] == CONSTANTS.HIT:
+            return round_counter + 1, {player_key: action}, Utility.check_if_need_to_flip_team_side(cur_team_side, action)
+
+        # new round, and flip sides
+        if action == CONSTANTS.HIT and cur_round_moves[player_key] == CONSTANTS.SAVE:  # last action was defence one
+            return round_counter + 1, {player_key: action}, Utility.check_if_need_to_flip_team_side(cur_team_side, action)
+
+    @staticmethod
     def player_is_done(player_name: str, game_num: int, round_num: int):
         data = Utility.load_json(CONSTANTS.DATA_JSON_FILE)
 
@@ -189,4 +276,3 @@ class Service:
         game_data[CONSTANTS.ROUND_KEY + str(round_num)] = cur_round
 
         Utility.write_json_data(game_file_path, game_data)
-
