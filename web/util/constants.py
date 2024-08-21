@@ -33,9 +33,13 @@ class CONSTANTS:
     SAVE = "SAVE"
     NO_SAVE = "NO_SAVE"
     NONE = "NONE"
+    ATTACK = "ATTACK"
+    DEFENCE = "DEFENCE"
 
     ALLOWED_PHOTO_EXTENSIONS = ['jpg', 'jpeg', 'png']
     UPLOAD_FOLDER = os.path.join(root_dir, "static", "images")
 
     IMAGE_EXTENSION = ".png"
     DEFAULT_IMAGE = "images/drunk.jpg"
+
+    PERSON_TO_PHOTO_JSON_FILE = os.path.join(DATA_FOLDER_PATH, "person_to_photo_relation.json")
