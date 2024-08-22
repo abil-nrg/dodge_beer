@@ -1,31 +1,13 @@
 {
-    "player_count": 6,
-    "team_count": 2,
-    "game_count": 8,
-    "players": {
-        "player1": "Ali",
-        "player2": "Abil",
-        "player3": "A3",
-        "player4": "A4",
-        "player5": "A5",
-        "player6": "A6"
+    "player_count": 0,
+    "team_count": 0,
+    "game_count": 0,
+    "players":
+    {
+
     },
-    "teams": {
-        "team1": {
-            "team_name": "t1",
-            "team_players": [
-                "player4",
-                "player5",
-                "player1"
-            ]
-        },
-        "team2": {
-            "team_name": "t2",
-            "team_players": [
-                "player3",
-                "player2",
-                "player6"
-            ]
-        }
+    "teams":
+    {
+
     }
 }
