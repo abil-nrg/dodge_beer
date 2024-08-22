@@ -1,0 +1,39 @@
+{
+    "team1": "team1",
+    "team2": "team2",
+    "round_count": 0,
+    "round1": {
+        "team1": {
+            "player1": [
+                "HIT",
+                "HIT"
+            ],
+            "player4": [
+                "HIT",
+                "HIT"
+            ]
+        },
+        "team2": {
+            "player2": [
+                "SAVE",
+                "SAVE"
+            ],
+            "player3": [
+                "SAVE",
+                "SAVE"
+            ]
+        }
+    },
+    "round2": {
+        "team1": {},
+        "team2": {
+            "player2": [
+                "HIT",
+                "HIT"
+            ],
+            "player6": [
+                "HIT"
+            ]
+        }
+    }
+}

@@ -41,7 +41,7 @@
     <!-- Welcome   -->
     <section id="info" class="info-section">
       <div class="container form-cont mt-5">
-        <form action="{{ url_for('create_team_api') }}" method="get">
+        <form action="{{ url_for('create_team_api') }}" method="post">
             <div class="mb-3">
                 <label for="name_input" class="form-label">Team Name</label>
                 <input id="name_input" name="team_name" class="form-control" type="text" placeholder="Team name here" required>
