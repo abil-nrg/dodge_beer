@@ -10,6 +10,12 @@ from web.util.utility import Utility
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = CONSTANTS.UPLOAD_FOLDER
 
+round_moves = {}
+round_counter = 1
+cur_team_sides = {
+    "team1": CONSTANTS.ATTACK,
+    "team2": CONSTANTS.DEFENCE
+}
 
 # RENDER HTML
 
@@ -94,20 +100,17 @@ def play_game():
 
     game_file: str = Utility.create_game_file_path(game_num)
 
-    return render_template("play.html",
+    return render_template("play.html", round_num=round_counter,
                            game_num=game_num, game_file=game_file,
                            team1_name=team1_name, team2_name=team2_name,
                            team1=team1_players_to_photos, team2=team2_players_to_photos
                            )
 
 
-round_moves = {}
-round_counter = 1
-cur_team_sides = {
-    "team1": CONSTANTS.ATTACK,
-    "team2": CONSTANTS.DEFENCE
-}
-
+@app.route('/api/getRoundNum')
+def get_round_num():
+    global round_counter
+    return jsonify({'round_num': round_counter})
 
 @app.route('/updateGame', methods=['GET', 'POST'])
 def update_game():

@@ -39,7 +39,10 @@
  <section id="info" class="info-section">
         <div class="match-info-container">
             <div class="match-info">
-                <div class="team-names mb-3">{{ team1_name }} vs {{ team2_name }}</div>
+                <div class="team-names mb-3">
+                    <h1>{{ team1_name }} vs {{ team2_name }}</h1>
+                    <h2 id="round_n">Round {{ round_num }}</h2>
+                </div>
             </div>
         </div>
         <div class="info-container">
@@ -105,7 +108,21 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const gameNum = {{ game_num }};
+        const roundElement = document.getElementById("round_n");
 
+        // Function to fetch and update the round number
+        const updateRoundNumber = async () => {
+            try {
+                const url = "{{ url_for('get_round_num') }}";
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log("DATA " + data.round_num)
+                // Update the round number in the h2 element
+                roundElement.textContent = `Round ${data.round_num}`;
+            } catch (error) {
+                console.error("Error fetching round number:", error);
+            }
+        };
         // Handle action button clicks
         document.querySelectorAll(".action-button").forEach(button => {
             button.addEventListener("click", function() {
@@ -187,7 +204,12 @@
                 console.error("Error:", error);
             });
         });
+        document.querySelectorAll("button").forEach(button => {
+            button.addEventListener("click", updateRoundNumber);
+        });
     });
+
+
 </script>
 
 
