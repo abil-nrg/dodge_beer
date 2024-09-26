@@ -49,20 +49,53 @@ init_htw_list = [np.random.normal(loc, scale) for i in range(amt_players_per_tea
 
 players = [DB_player(i, hit_states, init_hit_p_list[i], save_states, init_save_p_list[i], init_htw_list[i]) for i in range(amt_players_per_team)]
 
+teamOne = [players[i] for i in range(0, 3)]
+teamTwo = [players[i] for i in range(3,6)]
+
 isGameDone = False
 
 amt_of_stat = 3
 amt_of_rounds = 60
 
 X_game = np.zeros((amt_players_per_team*amt_teams, amt_of_stat, amt_of_rounds))
+#STATS index expl
+#0 - HIT
+#1 - SAVES
+#2 - isDone
 cur_turn = 0
+attackTeam = teamOne.copy()
+defenseTeam = teamTwo.copy()
 while not isGameDone:
     
+    #team one hits
+    for pl1 in attackTeam:
+        isHit = pl1.attempt_hit()
+        if isHit:
+            defense_saves = {}
+            for pl2 in defenseTeam:
+                isSave, saveFactor = pl2.attempt_save()
+                if isSave:
+                    defense_saves[pl2.name] = (isSave, saveFactor)
+            saver = defense_saves[0]
+            for pl_save in defense_saves:
+                if pl_save[0] and saver[0] or not pl_save[0] and not saver[0]:
+                    #either both save or both miss
+                    if pl_save[1] >= saver[1]: #player wants it more
+                        saver = pl_save.name
+                elif pl_save[0] and not saver[0] or not pl_save[0] and saver[0]: #both decided to save
+                    if pl_save[1]: #player wants it more
+                        saver = pl_save.name
+            #record the interaction
+            X_game[pl1.name, 0, cur_turn] = 1
+            X_game[.name, 0, cur_turn] = 1 #TODO: fix the recording of stats
+
+
     #Check if the game is done
     if all(X_game[i,2, cur_turn] == 1 for i in range(amt_players_per_team*amt_teams)):
         isGameDone = True
 
-"""
-TODO:
-implement the actual game logic
-"""
+    temp_team = attackTeam.copy()
+    attackTeam = defenseTeam.copy()
+    defenseTeam = temp_team.copy()
+    
+

@@ -1,5 +1,6 @@
 from MarkovChain import MarkovChain
 import random as rng
+import numpy as np
 
 class DB_player:
     def __init__(self,name, hit_states, hit_p, save_states, save_p, htw):
