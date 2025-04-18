@@ -71,6 +71,12 @@
           </div>
         </div>
       </div>
+      <div class="skip-round-container">
+        <h1>Skip Round</h1>
+        <button type="button" id="skip-round" class="btn btn-danger">
+          Submit
+        </button>
+      </div>
       <div class="info-container">
         <!-- Team 1 Section -->
         <div class="section" data-team="{{ team1_name }}">
@@ -88,7 +94,7 @@
                   type="button"
                   name="action"
                   value="hit"
-                  class="btn btn-primary action-button btn-lg"
+                  class="btn btn-primary action-button btn-lg player-action"
                 >
                   Hit
                 </button>
@@ -96,7 +102,7 @@
                   type="button"
                   name="action"
                   value="save"
-                  class="btn btn-secondary action-button btn-lg"
+                  class="btn btn-secondary action-button btn-lg player-action"
                 >
                   Save
                 </button>
@@ -124,7 +130,7 @@
                   type="button"
                   name="action"
                   value="hit"
-                  class="btn btn-primary action-button btn-lg"
+                  class="btn btn-primary action-button btn-lg player-action"
                 >
                   Hit
                 </button>
@@ -132,7 +138,7 @@
                   type="button"
                   name="action"
                   value="save"
-                  class="btn btn-secondary action-button btn-lg"
+                  class="btn btn-secondary action-button btn-lg player-action"
                 >
                   Save
                 </button>
@@ -268,13 +274,25 @@
                   console.error("Error:", error);
               });
           });
-          document.querySelectorAll("button").forEach(button => {
+          document.querySelectorAll("button.player-action").forEach(button => {
           button.addEventListener("click", () => {
               setTimeout(() => {
                   updateRoundNumber();
               }, 1000); // Delay of 1 second
           });
-      });
+          });
+          console.log("Game Number: " + gameNum);
+          document.getElementById("skip-round").addEventListener("click", () => {
+
+
+            fetch("{{ url_for('skip_round') }}", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({"game_num": gameNum})
+              })
+          });
       });
     </script>
   </body>

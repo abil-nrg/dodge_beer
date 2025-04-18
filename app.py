@@ -107,7 +107,20 @@ def play_game():
                            team1=team1_players_to_photos, team2=team2_players_to_photos
                            )
 
+@app.route('/api/skipRound', methods=['GET', 'POST'])
+def skip_round():
+    if request.method == 'GET':
+        return jsonify(), 200
 
+    print(request.get_json())
+    global round_counter
+    data = request.get_json()
+    game_num = data.get("game_num")
+    
+    Service.skip_round(game_num, round_counter)
+    round_counter += 1
+    return jsonify(), 200
+    
 @app.route('/api/getRoundNum')
 def get_round_num():
     global round_counter

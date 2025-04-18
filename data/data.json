@@ -1,31 +1,7 @@
 {
-    "player_count": 6,
-    "team_count": 2,
-    "game_count": 1,
-    "players": {
-        "player1": "name1",
-        "player2": "name2",
-        "player3": "name3",
-        "player4": "name4",
-        "player5": "name5",
-        "player6": "name6"
-    },
-    "teams": {
-        "team1": {
-            "team_name": "t1",
-            "team_players": [
-                "player1",
-                "player2",
-                "player3"
-            ]
-        },
-        "team2": {
-            "team_name": "t2",
-            "team_players": [
-                "player4",
-                "player5",
-                "player6"
-            ]
-        }
-    }
+  "player_count": 0,
+  "team_count": 0,
+  "game_count": 0,
+  "players": {},
+  "teams": {}
 }

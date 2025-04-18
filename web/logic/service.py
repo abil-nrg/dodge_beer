@@ -276,3 +276,14 @@ class Service:
         game_data[CONSTANTS.ROUND_KEY + str(round_num)] = cur_round
 
         Utility.write_json_data(game_file_path, game_data)
+        
+    @staticmethod
+    def skip_round(game_num: int, round_num: int):
+        game_file_path = Utility.create_game_file_path(game_num)
+        game_data = Utility.load_json(game_file_path)
+
+        round_num = int(round_num) + 1
+        game_data[CONSTANTS.ROUND_KEY + str(round_num)] = {game_data[CONSTANTS.GAME_JSON_TEAM1]: {}, game_data[CONSTANTS.GAME_JSON_TEAM2]: {}}
+
+
+        Utility.write_json_data(game_file_path, game_data)

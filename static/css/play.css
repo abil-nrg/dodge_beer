@@ -78,3 +78,10 @@
   height: 200px;
   justify-content: center;
 }
+
+.skip-round-container {
+  max-width: 80%;
+  margin: 0 auto 30px auto; /* center it and add bottom spacing */
+  padding-left: 20px; /* align with .section padding */
+  text-align: left;
+}
