@@ -25,15 +25,15 @@ def home():  # put application's code here
 
 
 @app.route('/createPlayer')
-def create_player():
-    return render_template("create_player.html")
+def create_player(success=False):
+    print(success)
+    return render_template("create_player.html", success=success)
 
 
 @app.route('/createTeam')
-def create_team():
-    alert = False if request.args.get("alert") is None else True
+def create_team(success=False):
     available_players = Service.get_players_available()
-    return render_template("create_team.html", players=available_players, success=alert)
+    return render_template("create_team.html", players=available_players, success=success)
 
 
 @app.route('/newGame')
@@ -47,11 +47,12 @@ def new_game():
 @app.route('/api/createPlayer', methods=['GET', 'POST'])
 def create_player_api():
     if request.method == 'GET':
-        return render_template("create_player.html")
+        return create_player()
 
     name = request.form.get('player_name')
     photo = request.files.get('photo')
     filename = None
+    
     if photo and Utility.allowed_file(photo.filename):
         filename = secure_filename(photo.filename)
         photo_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -62,7 +63,7 @@ def create_player_api():
     if name is not None and filename is not None:
         Service.add_person_to_photo_file(name, filename)
 
-    return render_template("create_player.html", success=True)
+    return create_player(success=True)
 
 
 @app.route('/api/createTeam', methods=['GET', 'POST'])
@@ -76,7 +77,7 @@ def create_team_api():
     player3_name: str = request.form.get('player3')
     Service.create_team(team_name, player1_name, player2_name, player3_name)
 
-    return redirect(url_for("create_team", alert=True))
+    return create_team(success=True)
 
 
 @app.route('/api/createGame')
