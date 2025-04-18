@@ -111,14 +111,15 @@ def play_game():
 def skip_round():
     if request.method == 'GET':
         return jsonify(), 200
-
-    print(request.get_json())
+    
     global round_counter
+    print("ROUND NUMBER BEFORE: ", round_counter)
     data = request.get_json()
     game_num = data.get("game_num")
     
     Service.skip_round(game_num, round_counter)
     round_counter += 1
+    print("ROUND NUMBER AFTER: ", round_counter)
     return jsonify(), 200
     
 @app.route('/api/getRoundNum')

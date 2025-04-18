@@ -59,3 +59,11 @@ class Utility:
             new_team_sides[team_num] = CONSTANTS.ATTACK if side == CONSTANTS.DEFENCE\
                                                         else CONSTANTS.DEFENCE
         return new_team_sides
+    
+    @staticmethod
+    def translate_team_num_to_key_in_game(game:dict, teamname: str):
+        
+        for key, value in game.items():
+            if value == teamname:
+                return key
+        return None  # If not found

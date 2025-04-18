@@ -197,8 +197,10 @@ class Service:
 
         if player_key not in cur_round[game_team_num]:
             cur_round[game_team_num][player_key] = []
+        
 
-        player_actions = cur_round[team_num][player_key]
+        print("ROUND NUM: ", round_num)
+        player_actions = cur_round[game_team_num][player_key]
         player_actions.append(action)
 
         game_data[cur_round_str] = cur_round
@@ -283,7 +285,7 @@ class Service:
         game_data = Utility.load_json(game_file_path)
 
         round_num = int(round_num) + 1
-        game_data[CONSTANTS.ROUND_KEY + str(round_num)] = {game_data[CONSTANTS.GAME_JSON_TEAM1]: {}, game_data[CONSTANTS.GAME_JSON_TEAM2]: {}}
+        game_data[CONSTANTS.ROUND_KEY + str(round_num)] = {CONSTANTS.GAME_JSON_TEAM1: {}, CONSTANTS.GAME_JSON_TEAM2: {}}
 
 
         Utility.write_json_data(game_file_path, game_data)

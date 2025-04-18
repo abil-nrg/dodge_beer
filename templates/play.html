@@ -291,7 +291,10 @@
                       "Content-Type": "application/json"
                   },
                   body: JSON.stringify({"game_num": gameNum})
-              })
+              });
+
+              updateRoundNumber();
+
           });
       });
     </script>

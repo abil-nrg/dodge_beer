@@ -1,7 +1,13 @@
 {
-  "player_count": 0,
-  "team_count": 0,
-  "game_count": 0,
-  "players": {},
-  "teams": {}
+    "player_count": 0,
+    "team_count": 0,
+    "game_count": 0,
+    "players":
+    {
+
+    },
+    "teams":
+    {
+
+    }
 }

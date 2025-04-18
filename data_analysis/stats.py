@@ -71,18 +71,20 @@ for p in player_hits:
     print(total_throws)
     if total_throws == 0:
         player_hits[p] =  0
-    player_hits[p] =  total_hits / total_throws
+    else:
+        player_hits[p] =  total_hits / total_throws
 
 print(player_hits)
 
 for p in player_saves:
-    print(np.shape(player_hits[p]))
+    print(np.shape(player_saves[p]))
     total_saves, total_throws = np.sum(player_saves[p], axis = 0)
 
     print(total_throws)
     if total_throws == 0:
-        player_hits[p] =  0
-    player_saves[p] =  total_saves / total_throws
+        player_saves[p] =  0
+    else:
+        player_saves[p] =  total_saves / total_throws
 
 print(f"HIT % ****{sorted(player_hits.items(), key=lambda kv: (kv[1], kv[0]))}") 
 print(f"SAVE % ****{sorted(player_saves.items(), key=lambda kv: (kv[1], kv[0]))}") 
