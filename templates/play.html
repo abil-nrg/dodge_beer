@@ -180,7 +180,7 @@
                   const url = "{{ url_for('get_round_num') }}";
                   const response = await fetch(url);
                   const data = await response.json();
-                  console.log("DATA " + data.round_num)
+                  console.log("ROUND NUM " + data.round_num)
                   // Update the round number in the h2 element
                   roundElement.textContent = `Round ${data.round_num}`;
               } catch (error) {
@@ -269,8 +269,12 @@
               });
           });
           document.querySelectorAll("button").forEach(button => {
-              button.addEventListener("click", updateRoundNumber);
+          button.addEventListener("click", () => {
+              setTimeout(() => {
+                  updateRoundNumber();
+              }, 1000); // Delay of 1 second
           });
+      });
       });
     </script>
   </body>

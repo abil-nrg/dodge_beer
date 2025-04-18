@@ -1,0 +1,40 @@
+{
+  "team1": "team1",
+  "team2": "team2",
+  "round_count": 0,
+  "round1": {
+    "team1": {
+      "player1": ["HIT"],
+      "player2": ["HIT"]
+    },
+    "team2": {
+      "player5": ["SAVE"],
+      "player6": ["SAVE"]
+    }
+  },
+  "round2": {
+    "team1": {
+      "player1": ["SAVE"],
+      "player2": ["SAVE"],
+      "player3": ["SAVE"]
+    },
+    "team2": {
+      "player4": ["HIT"],
+      "player5": ["HIT"],
+      "player6": ["HIT"]
+    }
+  },
+  "round3": {
+    "team1": {
+      "player1": ["SAVE"],
+      "player2": ["SAVE"],
+      "player3": ["SAVE"]
+    },
+    "team2": {
+      "player5": ["HIT"],
+      "player4": ["HIT"],
+      "player6": ["HIT"]
+    },
+    "players_done": ["player4", "player5", "player6"]
+  }
+}

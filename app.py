@@ -139,7 +139,6 @@ def update_game():
 
     round_moves = new_round_moves
     round_counter = new_round_num
-
     return jsonify(), 200
 
 
