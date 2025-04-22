@@ -1,14 +1,20 @@
+// backend\controllers\gameObjectController.ts
+
+// next
 import { NextRequest, NextResponse } from "next/server";
+// util
 import {
   DATA_FILE,
   overwriteFile,
   readMainDataFile,
 } from "../services/readFile";
+// types
 import {
   ChangePlayerStatusInTeamRequest,
   CreatePlayerRequest,
   CreateTeamRequest,
 } from "../config/types";
+// logic & data layer
 import {
   addPlayerToTeam,
   createPlayerObject,
@@ -16,13 +22,35 @@ import {
   removePlayerFromTeam,
 } from "../services/createGameObject";
 
+/**
+ * Type signature for mutation functions that mutate the main data file.
+ * These functions receive the current data and request specific payload,
+ * and return updated data to be saved.
+ */
 type MutationHandler<T = any> = (data: any, reqData: T) => any;
 
+/**
+ * Interface for the input to the reusable data-mutation wrapper.
+ */
 interface FuncWrapper {
-  req: NextRequest;
-  mutationFunc: MutationHandler;
-  errorMsg: string;
+  req: NextRequest; // Incoming request
+  mutationFunc: MutationHandler; // Logic function that performs the mutation
+  errorMsg: string; // Error message to display on failure
 }
+
+/**
+ * Shared wrapper to handle common backend tasks:
+ *  1. Parse request body
+ *  2. Read data from disk
+ *  3. Pass to a logic function
+ *  4. Save updated data to disk
+ *  5. Return  success or error response
+ *
+ * @param req          The incoming Next.js API request
+ * @param mutationFunc Function to apply  logic and return updated data
+ * @param errorMsg     Message to include in error response/log if mutation fails
+ * @returns            JSON response containing updated data or error
+ */
 export async function wrapDataMutation<T = any>({
   req,
   mutationFunc,
@@ -42,6 +70,11 @@ export async function wrapDataMutation<T = any>({
   }
 }
 
+// ------------------------------------------------------------------------------------
+
+/**
+ * API handler for creating a new player and storing it in the main data file.
+ */
 export async function createPlayerHandler(req: NextRequest) {
   return wrapDataMutation<CreatePlayerRequest>({
     req: req,
@@ -56,6 +89,9 @@ export async function createPlayerHandler(req: NextRequest) {
   });
 }
 
+/**
+ * API handler for creating a new team and storing it in the main data file.
+ */
 export async function createTeamHandler(req: NextRequest) {
   return wrapDataMutation<CreateTeamRequest>({
     req: req,
@@ -69,6 +105,9 @@ export async function createTeamHandler(req: NextRequest) {
   });
 }
 
+/**
+ * API handler for adding a player to a team.
+ */
 export async function addPlayerToTeamHandler(req: NextRequest) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
     req: req,
@@ -83,11 +122,14 @@ export async function addPlayerToTeamHandler(req: NextRequest) {
   });
 }
 
+/**
+ * API handler for removing a player from a team.
+ */
 export async function removePlayerToTeamHandler(req: NextRequest) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
     req: req,
     mutationFunc: (data, reqData) => {
-      return addPlayerToTeam({
+      return removePlayerFromTeam({
         data,
         teamId: reqData.player_id,
         playerId: reqData.player_id,

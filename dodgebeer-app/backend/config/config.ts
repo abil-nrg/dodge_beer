@@ -1,3 +1,4 @@
+// CONSTANT VALUES
 const Config = {
   DATA_FILE: "data",
   STAT_FILE: "stats",
@@ -16,6 +17,7 @@ const Config = {
 
 export default Config;
 
+// MAIN DATA FILE STRCTURE
 type Player = {
   name: string;
   player_id: string;

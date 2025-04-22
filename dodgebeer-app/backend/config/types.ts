@@ -1,3 +1,5 @@
+// Request Interfaces
+
 export interface CreatePlayerRequest {
   player_name: string;
   player_photo?: string;
