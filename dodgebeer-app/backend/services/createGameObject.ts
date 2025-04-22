@@ -40,7 +40,7 @@ interface ChangePlayerInTeamInterface {
   playerId: string;
 }
 
-function addPlayerToTeam({
+export function addPlayerToTeam({
   data,
   teamId,
   playerId,
@@ -50,7 +50,7 @@ function addPlayerToTeam({
   return data;
 }
 
-function removePlayerFromTeam({
+export function removePlayerFromTeam({
   data,
   teamId,
   playerId,

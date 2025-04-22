@@ -7,4 +7,7 @@ export interface CreateTeamRequest {
   team_name: string;
 }
 
-export interface AddPlayerToTeamRequest {}
+export interface ChangePlayerStatusInTeamRequest {
+  team_id: string;
+  player_id: string;
+}

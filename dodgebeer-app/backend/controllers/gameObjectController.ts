@@ -4,63 +4,95 @@ import {
   overwriteFile,
   readMainDataFile,
 } from "../services/readFile";
-import { CreatePlayerRequest, CreateTeamRequest } from "../config/types";
 import {
+  ChangePlayerStatusInTeamRequest,
+  CreatePlayerRequest,
+  CreateTeamRequest,
+} from "../config/types";
+import {
+  addPlayerToTeam,
   createPlayerObject,
   createTeamObject,
+  removePlayerFromTeam,
 } from "../services/createGameObject";
 
-export async function createPlayerHandler(req: NextRequest) {
-  const req_data = (await req.json()) as CreatePlayerRequest;
+type MutationHandler<T = any> = (data: any, reqData: T) => any;
 
-  const main_data = readMainDataFile();
+interface FuncWrapper {
+  req: NextRequest;
+  mutationFunc: MutationHandler;
+  errorMsg: string;
+}
+export async function wrapDataMutation<T = any>({
+  req,
+  mutationFunc,
+  errorMsg,
+}: FuncWrapper) {
   try {
-    const updated_data = createPlayerObject({
-      data: main_data,
-      playerName: req_data.player_name,
-      playerPhoto: req_data.player_photo,
-    });
+    const req_data = (await req.json()) as T;
+    const main_data = readMainDataFile();
 
+    const updated_data = mutationFunc(main_data, req_data);
     overwriteFile(DATA_FILE, updated_data);
-    return NextResponse.json({ status: 200 });
+
+    return NextResponse.json({ status: 200, data: updated_data });
   } catch (err) {
-    console.error("Failed to create player:", err);
-    return NextResponse.json({ status: 500 });
+    console.error(`${errorMsg}:`, err);
+    return NextResponse.json({ status: 500, error: errorMsg });
   }
+}
+
+export async function createPlayerHandler(req: NextRequest) {
+  return wrapDataMutation<CreatePlayerRequest>({
+    req: req,
+    mutationFunc: (data, reqData) => {
+      return createPlayerObject({
+        data,
+        playerName: reqData.player_name,
+        playerPhoto: reqData.player_photo,
+      });
+    },
+    errorMsg: "Failed to create player",
+  });
 }
 
 export async function createTeamHandler(req: NextRequest) {
-  const req_data = (await req.json()) as CreateTeamRequest;
-
-  const main_data = readMainDataFile();
-  try {
-    const updated_data = createTeamObject({
-      data: main_data,
-      teamName: req_data.team_name,
-    });
-
-    overwriteFile(DATA_FILE, updated_data);
-    return NextResponse.json({ status: 200 });
-  } catch (err) {
-    console.error("Failed to create player:", err);
-    return NextResponse.json({ status: 500 });
-  }
+  return wrapDataMutation<CreateTeamRequest>({
+    req: req,
+    mutationFunc: (data, reqData) => {
+      return createTeamObject({
+        data,
+        teamName: reqData.team_name,
+      });
+    },
+    errorMsg: "Failed to create team",
+  });
 }
 
 export async function addPlayerToTeamHandler(req: NextRequest) {
-  const req_data = (await req.json()) as CreateTeamRequest;
+  return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
+    req: req,
+    mutationFunc: (data, reqData) => {
+      return addPlayerToTeam({
+        data,
+        teamId: reqData.player_id,
+        playerId: reqData.player_id,
+      });
+    },
+    errorMsg: "Failed to add player to team",
+  });
+}
 
-  const main_data = readMainDataFile();
-  try {
-    const updated_data = createTeamObject({
-      data: main_data,
-      teamName: req_data.team_name,
-    });
-
-    overwriteFile(DATA_FILE, updated_data);
-    return NextResponse.json({ status: 200 });
-  } catch (err) {
-    console.error("Failed to create player:", err);
-    return NextResponse.json({ status: 500 });
-  }
+export async function removePlayerToTeamHandler(req: NextRequest) {
+  return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
+    req: req,
+    mutationFunc: (data, reqData) => {
+      return addPlayerToTeam({
+        data,
+        teamId: reqData.player_id,
+        playerId: reqData.player_id,
+      });
+    },
+    errorMsg: "Failed to remove player from team",
+  });
 }
