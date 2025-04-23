@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 // CONSTANT VALUES
 const Config = {
   DATA_FILE: "data",
@@ -18,22 +20,26 @@ const Config = {
 export default Config;
 
 // MAIN DATA FILE STRCTURE
-type Player = {
-  name: string;
-  player_id: string;
-  photo: string;
-};
-type Team = {
-  team_name: string;
-  players: Player[];
-};
+export const PlayerSchema = z.object({
+  name: z.string(),
+  photo: z.string(),
+});
 
-type MAIN_DATA_FILE_TYPE = {
-  player_count: number;
-  team_count: number;
-  game_count: number;
-  players: { [key: string]: Player };
-  teams: { [key: string]: Team };
-};
+export type Player = z.infer<typeof PlayerSchema>;
 
-export type { Player, Team, MAIN_DATA_FILE_TYPE };
+export const TeamSchema = z.object({
+  team_name: z.string(),
+  players: z.array(PlayerSchema),
+});
+
+export type Team = z.infer<typeof TeamSchema>;
+
+export const MainDataSchema = z.object({
+  player_count: z.number(),
+  team_count: z.number(),
+  game_count: z.number(),
+  players: z.record(PlayerSchema),
+  teams: z.record(TeamSchema),
+});
+
+export type MainDataType = z.infer<typeof MainDataSchema>;

@@ -1,7 +1,7 @@
 // backend\controllers\gameObjectController.ts
 
 // next
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 // util
 import {
   DATA_FILE,
@@ -32,9 +32,9 @@ type MutationHandler<T = any> = (data: any, reqData: T) => any;
 /**
  * Interface for the input to the reusable data-mutation wrapper.
  */
-interface FuncWrapper {
-  req: NextRequest; // Incoming request
-  mutationFunc: MutationHandler; // Logic function that performs the mutation
+interface FuncWrapper<T = any> {
+  body: T; // Incoming request
+  mutationFunc: MutationHandler<T>; // Logic function that performs the mutation
   errorMsg: string; // Error message to display on failure
 }
 
@@ -51,18 +51,15 @@ interface FuncWrapper {
  * @param errorMsg     Message to include in error response/log if mutation fails
  * @returns            JSON response containing updated data or error
  */
-export async function wrapDataMutation<T = any>({
-  req,
+export async function wrapDataMutation<T>({
+  body,
   mutationFunc,
   errorMsg,
-}: FuncWrapper) {
+}: FuncWrapper<T>) {
   try {
-    const req_data = (await req.json()) as T;
     const main_data = readMainDataFile();
-
-    const updated_data = mutationFunc(main_data, req_data);
+    const updated_data = mutationFunc(main_data, body);
     overwriteFile(DATA_FILE, updated_data);
-
     return NextResponse.json({ status: 200, data: updated_data });
   } catch (err) {
     console.error(`${errorMsg}:`, err);
@@ -75,9 +72,9 @@ export async function wrapDataMutation<T = any>({
 /**
  * API handler for creating a new player and storing it in the main data file.
  */
-export async function createPlayerHandler(req: NextRequest) {
+export async function createPlayerHandler(body: CreatePlayerRequest) {
   return wrapDataMutation<CreatePlayerRequest>({
-    req: req,
+    body: body,
     mutationFunc: (data, reqData) => {
       return createPlayerObject({
         data,
@@ -92,9 +89,9 @@ export async function createPlayerHandler(req: NextRequest) {
 /**
  * API handler for creating a new team and storing it in the main data file.
  */
-export async function createTeamHandler(req: NextRequest) {
+export async function createTeamHandler(body: CreateTeamRequest) {
   return wrapDataMutation<CreateTeamRequest>({
-    req: req,
+    body: body,
     mutationFunc: (data, reqData) => {
       return createTeamObject({
         data,
@@ -108,9 +105,11 @@ export async function createTeamHandler(req: NextRequest) {
 /**
  * API handler for adding a player to a team.
  */
-export async function addPlayerToTeamHandler(req: NextRequest) {
+export async function addPlayerToTeamHandler(
+  body: ChangePlayerStatusInTeamRequest
+) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
-    req: req,
+    body: body,
     mutationFunc: (data, reqData) => {
       return addPlayerToTeam({
         data,
@@ -125,9 +124,11 @@ export async function addPlayerToTeamHandler(req: NextRequest) {
 /**
  * API handler for removing a player from a team.
  */
-export async function removePlayerToTeamHandler(req: NextRequest) {
+export async function removePlayerToTeamHandler(
+  body: ChangePlayerStatusInTeamRequest
+) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
-    req: req,
+    body: body,
     mutationFunc: (data, reqData) => {
       return removePlayerFromTeam({
         data,

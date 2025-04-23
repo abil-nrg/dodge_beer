@@ -1,5 +1,5 @@
 // COMPONENTS
-import Navbar from "./components/Navbar";
+import Navbar from "./components/ui/Navbar";
 import BootstrapClient from "./components/BoostrapClient";
 // CSS
 import "./globals.css";

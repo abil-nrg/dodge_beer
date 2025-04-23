@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs";
-import Config, { MAIN_DATA_FILE_TYPE } from "../config/config";
+import Config, { MainDataType } from "../config/config";
 
-const CUR_PATH = path.join(__dirname, "..", "data");
+const CUR_PATH = path.join(process.cwd(), "backend", "data");
 // files
 const DATA_FILE = path.join(CUR_PATH, Config.DATA_FILE) + ".json";
 const STAT_FILE = path.join(CUR_PATH, Config.STAT_FILE) + ".json";
@@ -46,7 +46,7 @@ function readMainDataFile() {
     content: Config.EMPTY_DATA_FILE,
   });
   const data = fs.readFileSync(DATA_FILE, "utf-8");
-  return JSON.parse(data) as MAIN_DATA_FILE_TYPE;
+  return JSON.parse(data) as MainDataType;
 }
 
 export {

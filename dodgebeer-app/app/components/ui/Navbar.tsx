@@ -29,18 +29,18 @@ export default function Navbar() {
         >
           <ul className="navbar-nav gap-4">
             <li className="nav-item">
-              <Link className="nav-link fs-5" href="/">
-                Create Team
+              <Link className="nav-link fs-4" href="/teams">
+                Teams
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link fs-5" href="/">
-                New Game
+              <Link className="nav-link fs-4" href="/players">
+                Players
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link fs-5" href="/">
-                Stats
+              <Link className="nav-link fs-4" href="/games">
+                Games
               </Link>
             </li>
           </ul>

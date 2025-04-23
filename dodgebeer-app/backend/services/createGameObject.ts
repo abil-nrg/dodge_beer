@@ -1,7 +1,7 @@
-import Config, { MAIN_DATA_FILE_TYPE, Player } from "../config/config";
+import Config, { MainDataType, Player, Team } from "../config/config";
 
 interface CreatePlayerInterface {
-  data: MAIN_DATA_FILE_TYPE;
+  data: MainDataType;
   playerName: string;
   playerPhoto?: string;
 }
@@ -16,12 +16,11 @@ export function createPlayerObject({
     name: playerName,
     photo: playerPhoto || Config.DEFAULT_PHOTO,
   } as Player;
-
   return data;
 }
 
 interface CreateTeamInterface {
-  data: MAIN_DATA_FILE_TYPE;
+  data: MainDataType;
   teamName: string;
 }
 export function createTeamObject({ data, teamName }: CreateTeamInterface) {
@@ -30,12 +29,12 @@ export function createTeamObject({ data, teamName }: CreateTeamInterface) {
   data.teams[teamKey] = {
     team_name: teamName,
     players: [],
-  };
+  } as Team;
   return data;
 }
 
 interface ChangePlayerInTeamInterface {
-  data: MAIN_DATA_FILE_TYPE;
+  data: MainDataType;
   teamId: string;
   playerId: string;
 }
@@ -56,7 +55,13 @@ export function removePlayerFromTeam({
   playerId,
 }: ChangePlayerInTeamInterface) {
   const teamPlayers = data.teams[teamId].players;
-  const index = teamPlayers.findIndex((p) => p.player_id === playerId);
+  const playerToRemove = data.players[playerId];
+
+  const index = teamPlayers.findIndex(
+    (player) =>
+      player.name === playerToRemove.name &&
+      player.photo === playerToRemove.photo
+  );
   if (index > -1) teamPlayers.splice(index, 1);
   return data;
 }

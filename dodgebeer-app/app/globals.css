@@ -5,3 +5,9 @@
   color: #333;
   margin-top: 4rem;
 }
+
+:root {
+  --primary: #0d6efd;
+  --gray-light: #f8f9fa;
+  --text-muted: #6c757d;
+}
