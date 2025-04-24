@@ -27,6 +27,19 @@ export type ChangePlayerStatusInTeamRequest = z.infer<
   typeof ChangePlayerStatusInTeamSchema
 >;
 
+// DELETE PLAYER AND TEAM
+export const DeleteTeamSchema = z.object({
+  team_id: z.string().min(1),
+});
+
+export type DeleteTeamRequest = z.infer<typeof DeleteTeamSchema>;
+
+export const DeletePlayerSchema = z.object({
+  player_id: z.string().min(1),
+});
+
+export type DeletePlayerRequest = z.infer<typeof DeletePlayerSchema>;
+
 /**
  * Response Interfaces
  */

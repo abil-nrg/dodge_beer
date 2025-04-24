@@ -5,8 +5,10 @@ const Config = {
   DATA_FILE: "data",
   STAT_FILE: "stats",
   GAME_FILE: "game",
-  PLAYER_KEY: "player",
-  TEAM_KEY: "team",
+  PLAYER: "player",
+  PLAYERS: "players",
+  TEAM: "team",
+  TEAMS: "teams",
   DEFAULT_PHOTO: "default.jpg",
   EMPTY_DATA_FILE: {
     player_count: 0,
@@ -29,7 +31,7 @@ export type Player = z.infer<typeof PlayerSchema>;
 
 export const TeamSchema = z.object({
   team_name: z.string(),
-  players: z.array(PlayerSchema),
+  players: z.array(z.string()),
 });
 
 export type Team = z.infer<typeof TeamSchema>;

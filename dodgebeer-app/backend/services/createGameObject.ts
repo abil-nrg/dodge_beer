@@ -1,4 +1,8 @@
 import Config, { MainDataType, Player, Team } from "../config/config";
+import {
+  checkIfTeamAndPlayerExists,
+  checkIfTeamIdExists,
+} from "@backend/utils/gameObjectExistsUtil";
 
 interface CreatePlayerInterface {
   data: MainDataType;
@@ -11,7 +15,7 @@ export function createPlayerObject({
   playerPhoto,
 }: CreatePlayerInterface) {
   data.player_count += 1;
-  const playerKey = `${Config.PLAYER_KEY}${data.player_count}`;
+  const playerKey = `${Config.PLAYER}${data.player_count}`;
   data.players[playerKey] = {
     name: playerName,
     photo: playerPhoto || Config.DEFAULT_PHOTO,
@@ -25,7 +29,7 @@ interface CreateTeamInterface {
 }
 export function createTeamObject({ data, teamName }: CreateTeamInterface) {
   data.team_count += 1;
-  const teamKey = `${Config.TEAM_KEY}${data.team_count}`;
+  const teamKey = `${Config.TEAM}${data.team_count}`;
   data.teams[teamKey] = {
     team_name: teamName,
     players: [],
@@ -44,8 +48,12 @@ export function addPlayerToTeam({
   teamId,
   playerId,
 }: ChangePlayerInTeamInterface) {
-  const player: Player = data.players[playerId];
-  data.teams[teamId].players.push(player);
+  //  need to verify that player and team exists
+  if (!checkIfTeamAndPlayerExists(data, teamId, playerId)) {
+    throw new Error("Team or Player don't exist in file");
+  }
+
+  data.teams[teamId].players.push(playerId);
   return data;
 }
 
@@ -54,14 +62,42 @@ export function removePlayerFromTeam({
   teamId,
   playerId,
 }: ChangePlayerInTeamInterface) {
+  //  need to verify that player and team exists
+  if (!checkIfTeamIdExists(data, teamId)) {
+    throw new Error("Team or Player don't exist in file");
+  }
   const teamPlayers = data.teams[teamId].players;
-  const playerToRemove = data.players[playerId];
 
-  const index = teamPlayers.findIndex(
-    (player) =>
-      player.name === playerToRemove.name &&
-      player.photo === playerToRemove.photo
-  );
+  const index = teamPlayers.findIndex((player_id) => player_id == playerId);
   if (index > -1) teamPlayers.splice(index, 1);
+  return data;
+}
+
+interface DeleteTeam {
+  data: MainDataType;
+  teamId: string;
+}
+
+export function deleteTeamService({ data, teamId }: DeleteTeam) {
+  delete data.teams[teamId];
+  return data;
+}
+
+interface DeletePlayer {
+  data: MainDataType;
+  playerId: string;
+}
+
+export function deletePlayerService({ data, playerId }: DeletePlayer) {
+  delete data.players[playerId];
+  // we also need to go through every team and delete player id there
+  const teams = data.teams;
+  for (const team of Object.values(teams)) {
+    const index = team.players.indexOf(playerId);
+    if (index > -1) {
+      team.players.splice(index, 1);
+      break;
+    }
+  }
   return data;
 }

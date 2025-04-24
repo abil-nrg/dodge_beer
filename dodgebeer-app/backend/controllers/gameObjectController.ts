@@ -13,12 +13,16 @@ import {
   ChangePlayerStatusInTeamRequest,
   CreatePlayerRequest,
   CreateTeamRequest,
+  DeletePlayerRequest,
+  DeleteTeamRequest,
 } from "../config/types";
 // logic & data layer
 import {
   addPlayerToTeam,
   createPlayerObject,
   createTeamObject,
+  deletePlayerService,
+  deleteTeamService,
   removePlayerFromTeam,
 } from "../services/createGameObject";
 
@@ -106,14 +110,14 @@ export async function createTeamHandler(body: CreateTeamRequest) {
  * API handler for adding a player to a team.
  */
 export async function addPlayerToTeamHandler(
-  body: ChangePlayerStatusInTeamRequest
+  body: ChangePlayerStatusInTeamRequest,
 ) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
     body: body,
     mutationFunc: (data, reqData) => {
       return addPlayerToTeam({
         data,
-        teamId: reqData.player_id,
+        teamId: reqData.team_id,
         playerId: reqData.player_id,
       });
     },
@@ -125,17 +129,43 @@ export async function addPlayerToTeamHandler(
  * API handler for removing a player from a team.
  */
 export async function removePlayerToTeamHandler(
-  body: ChangePlayerStatusInTeamRequest
+  body: ChangePlayerStatusInTeamRequest,
 ) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
     body: body,
     mutationFunc: (data, reqData) => {
       return removePlayerFromTeam({
         data,
-        teamId: reqData.player_id,
+        teamId: reqData.team_id,
         playerId: reqData.player_id,
       });
     },
     errorMsg: "Failed to remove player from team",
+  });
+}
+
+export async function deleteTeam(body: DeleteTeamRequest) {
+  return wrapDataMutation<DeleteTeamRequest>({
+    body: body,
+    mutationFunc: (data, reqData) => {
+      return deleteTeamService({
+        data,
+        teamId: reqData.team_id,
+      });
+    },
+    errorMsg: "Failed to delete team",
+  });
+}
+
+export async function deletePlayer(body: DeletePlayerRequest) {
+  return wrapDataMutation<DeletePlayerRequest>({
+    body: body,
+    mutationFunc: (data, reqData) => {
+      return deletePlayerService({
+        data,
+        playerId: reqData.player_id,
+      });
+    },
+    errorMsg: "Failed to delete player",
   });
 }
