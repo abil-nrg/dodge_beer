@@ -1,30 +1,49 @@
-import TeamCard from "../components/ui/TeamCard";
+"use client";
+import React, { useState, useEffect } from "react";
+import TeamCard from "@/app/components/ui/TeamCard";
+import { API_ROUTE } from "@/app/api/all-routes";
+import { GetAllTeamsResponse } from "@backend/config/types";
 
 export default function TeamsPage() {
-  const teams = [
-    {
-      teamName: "Thunder Bros",
-      players: [
-        { name: "Max", photo: "/avatars/max.png" },
-        { name: "Lena", photo: "/avatars/lena.png" },
-        { name: "Jules", photo: "/avatars/jules.png" },
-        { name: "Dana", photo: "/avatars/dana.png" },
-      ],
-    },
-    {
-      teamName: "Beer Bashers",
-      players: [
-        { name: "Mike", photo: "/avatars/mike.png" },
-        { name: "Sara", photo: "/avatars/sara.png" },
-      ],
-    },
-  ];
+  const [data, setData] = useState<GetAllTeamsResponse | null>(null);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    async function fetchTeams() {
+      const response = await fetch(API_ROUTE.GET_ALL_TEAMS, { method: "GET" });
+      const result = await response.json();
+      if (result.status !== 200) {
+        setIsError(true);
+        return;
+      }
+      const data = result.data as GetAllTeamsResponse;
+
+      setData(data || []);
+    }
+    fetchTeams();
+  }, []);
+
+  // loading state
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
+  const hasTeams = Object.entries(data.teams).length > 0;
+  const teamEntries = Object.entries(data.teams);
+
   return (
     <div className="container py-4">
-      <h2 className="mb-4 fw-bold">Teams</h2>
-      {teams.map((team, i) => (
-        <TeamCard key={i} team_name={team.teamName} players={team.players} />
-      ))}
+      {hasTeams ? (
+        teamEntries.map(([teamId, team]) => (
+          <TeamCard
+            key={teamId}
+            team_name={team.team_name}
+            players={team.players}
+          />
+        ))
+      ) : (
+        <div>Nothing here</div>
+      )}
     </div>
   );
 }
