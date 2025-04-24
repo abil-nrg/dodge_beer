@@ -2,10 +2,21 @@
   "player_count": 2,
   "team_count": 2,
   "game_count": 0,
-  "players": {},
+  "players": {
+    "player2": {
+      "name": "p1",
+      "photo": "default.jpg"
+    }
+  },
   "teams": {
     "team1": {
       "team_name": "t1",
+      "players": [
+        "player2"
+      ]
+    },
+    "team2": {
+      "team_name": "t2",
       "players": []
     }
   }
