@@ -5,6 +5,10 @@
 import { z } from "zod";
 import { MainDataSchema, PlayerSchema } from "./config";
 
+export const PlayerIdSchema = z.object({
+  player_id: z.string(),
+});
+
 // Create Player Request
 export const CreatePlayerSchema = z.object({
   player_name: z.string().min(1),
@@ -27,13 +31,14 @@ export type ChangePlayerStatusInTeamRequest = z.infer<
   typeof ChangePlayerStatusInTeamSchema
 >;
 
-// DELETE PLAYER AND TEAM
+// DELETE TEAM
 export const DeleteTeamSchema = z.object({
   team_id: z.string().min(1),
 });
 
 export type DeleteTeamRequest = z.infer<typeof DeleteTeamSchema>;
 
+// DELETE PLAYER
 export const DeletePlayerSchema = z.object({
   player_id: z.string().min(1),
 });
@@ -57,3 +62,18 @@ export const GetAllPlayersSchema = MainDataSchema.pick({
 });
 
 export type GetAllPlayersResponse = z.infer<typeof GetAllPlayersSchema>;
+
+/* Player Photo */
+export const GetPlayerPhotoQueryRequestSchema = PlayerIdSchema.pick({
+  player_id: true,
+});
+
+export type GetPlayerPhotoQueryRequest = z.infer<
+  typeof GetPlayerPhotoQueryRequestSchema
+>;
+
+export const GetPlayerPhotoSchema = PlayerSchema.pick({
+  photo: true,
+});
+
+export type GetPlayerPhotoResponse = z.infer<typeof GetPlayerPhotoSchema>;
