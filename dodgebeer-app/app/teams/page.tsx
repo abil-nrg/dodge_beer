@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import TeamCard from "@/app/components/ui/TeamCard";
+import TeamCard from "@/app/components/ui/TeamCard/TeamCard";
 import { API_ROUTE } from "@/app/api/all-routes";
 import { GetAllTeamsResponse } from "@backend/config/types";
-
+import styles from "@/app/teams/page.module.css";
 export default function TeamsPage() {
   const [data, setData] = useState<GetAllTeamsResponse | null>(null);
   const [isError, setIsError] = useState(false);
@@ -32,7 +32,7 @@ export default function TeamsPage() {
   const teamEntries = Object.entries(data.teams);
 
   return (
-    <div className="container py-4">
+    <div className={styles["teams-container"]}>
       {hasTeams ? (
         teamEntries.map(([teamId, team]) => (
           <TeamCard

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validate } from "@/app/api/middleware/validator";
-import { ZodSchema, ZodTypeAny } from "zod";
+import { z, ZodObject, ZodRawShape, ZodSchema, ZodTypeAny } from "zod";
 
 // Type definition for controller/handler function
 // Takes validated data and returns a NextResponse
@@ -73,4 +73,37 @@ export function standardPostRequestHandler<T>({
     // call the handler/controller with validated data and return its response
     return handler(result.data);
   };
+}
+
+export function verifyQueryParams<T extends ZodObject<ZodRawShape>>(
+  req: NextRequest,
+  schema: T,
+): z.infer<T> | NextResponse {
+  const { searchParams } = new URL(req.url);
+  const obj: Record<string, string> = {};
+
+  for (const key of Object.keys(schema.shape)) {
+    const value = searchParams.get(key);
+    if (!value) {
+      return new NextResponse(
+        JSON.stringify({ error: `Missing query param: ${key}` }),
+        { status: 400 },
+      );
+    }
+
+    obj[key] = value;
+  }
+
+  const parseResult = schema.safeParse(obj);
+  if (!parseResult.success) {
+    return new NextResponse(
+      JSON.stringify({
+        error: "Invalid query parameters",
+        details: parseResult.error,
+      }),
+      { status: 400 },
+    );
+  }
+
+  return parseResult.data;
 }
