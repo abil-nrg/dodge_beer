@@ -7,7 +7,7 @@ import {
   DATA_FILE,
   overwriteFile,
   readMainDataFile,
-} from "../services/readFile";
+} from "@/backend/services/readFile";
 // types
 import { CreatePlayerRequest, DeletePlayerRequest } from "@/types/player";
 import {
@@ -17,13 +17,13 @@ import {
 } from "@/types/team";
 // logic & data layer
 import {
-  addPlayerToTeam,
-  createPlayerObject,
-  createTeamObject,
+  addPlayerToTeamService,
+  createPlayerObjectService,
+  createTeamObjectService,
   deletePlayerService,
   deleteTeamService,
-  removePlayerFromTeam,
-} from "../services/createPlayerAndTeamObject";
+  removePlayerFromTeamService,
+} from "@backend/services/createPlayerAndTeamObject";
 
 /**
  * Type signature for mutation functions that mutate the main data file.
@@ -78,11 +78,10 @@ export async function wrapDataMutation<T>({
 export async function createPlayerHandler(body: CreatePlayerRequest) {
   return wrapDataMutation<CreatePlayerRequest>({
     body: body,
-    mutationFunc: (data, reqData) => {
-      return createPlayerObject({
+    mutationFunc: (data, request) => {
+      return createPlayerObjectService({
         data,
-        playerName: reqData.player_name,
-        playerPhoto: reqData.player_photo,
+        body: request,
       });
     },
     errorMsg: "Failed to create player",
@@ -95,10 +94,10 @@ export async function createPlayerHandler(body: CreatePlayerRequest) {
 export async function createTeamHandler(body: CreateTeamRequest) {
   return wrapDataMutation<CreateTeamRequest>({
     body: body,
-    mutationFunc: (data, reqData) => {
-      return createTeamObject({
+    mutationFunc: (data, request) => {
+      return createTeamObjectService({
         data,
-        teamName: reqData.team_name,
+        body: request,
       });
     },
     errorMsg: "Failed to create team",
@@ -113,11 +112,10 @@ export async function addPlayerToTeamHandler(
 ) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
     body: body,
-    mutationFunc: (data, reqData) => {
-      return addPlayerToTeam({
+    mutationFunc: (data, request) => {
+      return addPlayerToTeamService({
         data,
-        teamId: reqData.team_id,
-        playerId: reqData.player_id,
+        body: request,
       });
     },
     errorMsg: "Failed to add player to team",
@@ -132,11 +130,10 @@ export async function removePlayerToTeamHandler(
 ) {
   return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
     body: body,
-    mutationFunc: (data, reqData) => {
-      return removePlayerFromTeam({
+    mutationFunc: (data, request) => {
+      return removePlayerFromTeamService({
         data,
-        teamId: reqData.team_id,
-        playerId: reqData.player_id,
+        body: request,
       });
     },
     errorMsg: "Failed to remove player from team",
@@ -146,10 +143,10 @@ export async function removePlayerToTeamHandler(
 export async function deleteTeam(body: DeleteTeamRequest) {
   return wrapDataMutation<DeleteTeamRequest>({
     body: body,
-    mutationFunc: (data, reqData) => {
+    mutationFunc: (data, request) => {
       return deleteTeamService({
         data,
-        teamId: reqData.team_id,
+        body: request,
       });
     },
     errorMsg: "Failed to delete team",
@@ -159,10 +156,10 @@ export async function deleteTeam(body: DeleteTeamRequest) {
 export async function deletePlayer(body: DeletePlayerRequest) {
   return wrapDataMutation<DeletePlayerRequest>({
     body: body,
-    mutationFunc: (data, reqData) => {
+    mutationFunc: (data, request) => {
       return deletePlayerService({
         data,
-        playerId: reqData.player_id,
+        body: request,
       });
     },
     errorMsg: "Failed to delete player",
