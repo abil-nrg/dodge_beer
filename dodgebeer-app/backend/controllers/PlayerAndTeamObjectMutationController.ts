@@ -9,13 +9,12 @@ import {
   readMainDataFile,
 } from "../services/readFile";
 // types
+import { CreatePlayerRequest, DeletePlayerRequest } from "@/types/player";
 import {
   ChangePlayerStatusInTeamRequest,
-  CreatePlayerRequest,
   CreateTeamRequest,
-  DeletePlayerRequest,
   DeleteTeamRequest,
-} from "../config/types";
+} from "@/types/team";
 // logic & data layer
 import {
   addPlayerToTeam,
@@ -24,7 +23,7 @@ import {
   deletePlayerService,
   deleteTeamService,
   removePlayerFromTeam,
-} from "../services/createGameObject";
+} from "../services/createPlayerAndTeamObject";
 
 /**
  * Type signature for mutation functions that mutate the main data file.
@@ -64,7 +63,7 @@ export async function wrapDataMutation<T>({
     const main_data = readMainDataFile();
     const updated_data = mutationFunc(main_data, body);
     overwriteFile(DATA_FILE, updated_data);
-    return NextResponse.json({ status: 200, data: updated_data });
+    return NextResponse.json({ status: 200, data: updated_data as T });
   } catch (err) {
     console.error(`${errorMsg}:`, err);
     return NextResponse.json({ status: 500, error: errorMsg });

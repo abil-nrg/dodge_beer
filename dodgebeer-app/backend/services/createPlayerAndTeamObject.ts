@@ -1,37 +1,46 @@
-import Config, { MainDataType, Player, Team } from "../config/config";
 import {
   checkIfTeamAndPlayerExists,
   checkIfTeamIdExists,
 } from "@backend/utils/gameObjectExistsUtil";
+import { MainDataConfig, MainDataType } from "@/types/main-data";
+import {
+  CreatePlayerRequest,
+  DeletePlayerRequest,
+  Player,
+} from "@/types/player";
+import {
+  ChangePlayerStatusInTeamRequest,
+  CreateTeamRequest,
+  DeleteTeamRequest,
+  Team,
+} from "@/types/team";
 
 interface CreatePlayerInterface {
   data: MainDataType;
-  playerName: string;
-  playerPhoto?: string;
+  body: CreatePlayerRequest;
 }
-export function createPlayerObject({
+export function createPlayerObjectService({
   data,
-  playerName,
-  playerPhoto,
+  body,
 }: CreatePlayerInterface) {
   data.player_count += 1;
-  const playerKey = `${Config.PLAYER}${data.player_count}`;
+  const playerKey = `${MainDataConfig.PLAYER}${data.player_count}`;
   data.players[playerKey] = {
-    name: playerName,
-    photo: playerPhoto || Config.DEFAULT_PHOTO,
+    name: body.player_name,
+    photo: body.player_photo || MainDataConfig.DEFAULT_PHOTO,
   } as Player;
   return data;
 }
 
 interface CreateTeamInterface {
   data: MainDataType;
-  teamName: string;
+  body: CreateTeamRequest;
 }
-export function createTeamObject({ data, teamName }: CreateTeamInterface) {
+export function createTeamObject({ data, body }: CreateTeamInterface) {
   data.team_count += 1;
-  const teamKey = `${Config.TEAM}${data.team_count}`;
+  const teamKey = `${MainDataConfig.TEAM}${data.team_count}`;
   data.teams[teamKey] = {
-    team_name: teamName,
+    team_name: body.team_name,
     players: [],
   } as Team;
   return data;
@@ -39,15 +48,15 @@ export function createTeamObject({ data, teamName }: CreateTeamInterface) {
 
 interface ChangePlayerInTeamInterface {
   data: MainDataType;
-  teamId: string;
-  playerId: string;
+  body: ChangePlayerStatusInTeamRequest;
 }
 
-export function addPlayerToTeam({
+export function addPlayerToTeamService({
   data,
-  teamId,
-  playerId,
+  body,
 }: ChangePlayerInTeamInterface) {
+  const teamId = body.team_id;
+  const playerId = body.player_id;
   //  need to verify that player and team exists
   if (!checkIfTeamAndPlayerExists(data, teamId, playerId)) {
     throw new Error("Team or Player don't exist in file");
@@ -57,11 +66,12 @@ export function addPlayerToTeam({
   return data;
 }
 
-export function removePlayerFromTeam({
+export function removePlayerFromTeamService({
   data,
-  teamId,
-  playerId,
+  body,
 }: ChangePlayerInTeamInterface) {
+  const teamId = body.team_id;
+  const playerId = body.player_id;
   //  need to verify that player and team exists
   if (!checkIfTeamIdExists(data, teamId)) {
     throw new Error("Team or Player don't exist in file");
@@ -75,25 +85,25 @@ export function removePlayerFromTeam({
 
 interface DeleteTeam {
   data: MainDataType;
-  teamId: string;
+  body: DeleteTeamRequest;
 }
 
-export function deleteTeamService({ data, teamId }: DeleteTeam) {
-  delete data.teams[teamId];
+export function deleteTeamService({ data, body }: DeleteTeam) {
+  delete data.teams[body.team_id];
   return data;
 }
 
 interface DeletePlayer {
   data: MainDataType;
-  playerId: string;
+  body: DeletePlayerRequest;
 }
 
-export function deletePlayerService({ data, playerId }: DeletePlayer) {
-  delete data.players[playerId];
+export function deletePlayerService({ data, body }: DeletePlayer) {
+  delete data.players[body.player_id];
   // we also need to go through every team and delete player id there
   const teams = data.teams;
   for (const team of Object.values(teams)) {
-    const index = team.players.indexOf(playerId);
+    const index = team.players.indexOf(body.player_id);
     if (index > -1) {
       team.players.splice(index, 1);
       break;

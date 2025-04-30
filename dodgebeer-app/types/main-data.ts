@@ -1,10 +1,10 @@
 import { z } from "zod";
+import { PlayerSchema } from "@/types/player";
+import { TeamSchema } from "@/types/team";
 
 // CONSTANT VALUES
-const Config = {
-  DATA_FILE: "data",
-  STAT_FILE: "stats",
-  GAME_FILE: "game",
+export const MainDataConfig = {
+  DATA_FILE: "data.json",
   PLAYER: "player",
   PLAYERS: "players",
   TEAM: "team",
@@ -17,24 +17,10 @@ const Config = {
     players: {},
     teams: {},
   },
+  EMPTY_GAME_FILE: {},
 };
 
-export default Config;
-
 // MAIN DATA FILE STRCTURE
-export const PlayerSchema = z.object({
-  name: z.string(),
-  photo: z.string(),
-});
-
-export type Player = z.infer<typeof PlayerSchema>;
-
-export const TeamSchema = z.object({
-  team_name: z.string(),
-  players: z.array(z.string()),
-});
-
-export type Team = z.infer<typeof TeamSchema>;
 
 export const MainDataSchema = z.object({
   player_count: z.number(),
