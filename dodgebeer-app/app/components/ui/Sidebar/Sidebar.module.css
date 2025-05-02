@@ -1,10 +1,31 @@
 #sidebar{
     height: 100vh;
     width: 250px;
-    padding: 10px 1em;
+    padding: 10px 0;
     background-color: var(--element-clr);
     border-right: 1px solid var(--line-clr);
     font-size: 1.2em;
+
+    position: sticky;
+    top: 0;
+    align-self: start;
+
+    transition: 300ms ease-in-out;
+    overflow: hidden;
+    text-wrap:nowrap;
+}
+/* make sidebar small */
+#sidebar.close{
+    padding: 5px;
+    width:60px;
+}
+/* hide text when closed */
+#sidebar.close a span {
+    display: none;
+}
+/* center icons when closed*/
+#sidebar.close a {
+    justify-content: center;
 }
 
 /*remove bullet points*/
@@ -16,11 +37,15 @@
 #sidebar > ul > li:first-child{
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 16px;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--line-clr);
     .logo{
         font-weight: 700;
+        font-size: 1.4em;
     }
 }
+
 /* active sidebar item */
 #sidebar ul li.active a{
     color: var(--accent-clr);
@@ -35,7 +60,53 @@
     align-items: center;
     gap: 1em;
 }
+
+#sidebar a:hover{
+    background-color: var(--hover-clr);
+}
+
 /* sidebar item except for logo */
 #sidebar ul li:not(:first-child){
 
+}
+
+/* toggle button */
+#toggle-btn{
+    margin-left: auto;
+    padding: 1em;
+    border: none;
+    border-radius: .5em;
+    background: none;
+    cursor: pointer;
+
+}
+
+
+#toggle-btn:hover{
+    background-color: var(--hover-clr);
+}
+
+/* animations */
+.rotate{
+    transform: rotate(-180deg);
+}
+.arrow-icon{
+    transition: transform 300ms ease;
+}
+
+/* icons */
+.arrow-icon{
+    font-size: 25px;
+}
+
+.sidebar-icon-item{
+    font-size: 1.5em;
+}
+
+@media (max-width: 800px) {
+    #sidebar{
+        height:60px;
+        width: 100%;
+        border-right: none;
+    }
 }

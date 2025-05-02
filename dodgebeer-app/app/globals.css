@@ -33,7 +33,7 @@
   --line-clr: #cfcfcf;
   --element-clr: #ffffff;
   --text-clr: #222223;
-  --hover-clr: #222533;
+  --hover-clr: #f4f4f4;
   --accent-clr: #5e63ff;
   --secondary-text-clr: #b0b3c1;
 }
@@ -54,4 +54,11 @@ body{
   color: var(--text-clr);
   display:grid;
   grid-template-columns: auto 1fr;
+}
+
+/* small screens don't need sidebar */
+@media (max-width: 800px) {
+ body {
+    grid-template-columns: 1fr;
+  }
 }

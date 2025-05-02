@@ -1,6 +1,15 @@
-import { MainDataSchema, PlayerSchema } from "@backend/config/config";
 import { z } from "zod";
-import { PlayerIdSchema } from "@backend/config/types";
+import { MainDataSchema } from "@/types/main-data";
+import { PlayerIdRequestSchema, PlayerSchema } from "@/types/player";
+
+export const OK_RESPONSE_JSON = {
+  status: 200,
+  headers: { "Content-Type": "application/json" },
+};
+
+export const INTERNAL_ERROR = {
+  status: 500,
+};
 
 /* GET TEAMS */
 export const GetAllTeamsResponseSchema = MainDataSchema.pick({
@@ -19,7 +28,7 @@ export const GetAllPlayersSchema = MainDataSchema.pick({
 export type GetAllPlayersResponse = z.infer<typeof GetAllPlayersSchema>;
 
 /* GET Player Photo */
-export const GetPlayerPhotoQueryRequestSchema = PlayerIdSchema.pick({
+export const GetPlayerPhotoQueryRequestSchema = PlayerIdRequestSchema.pick({
   player_id: true,
 });
 
