@@ -1,13 +1,57 @@
-.welcome-text {
-  font-size: 2rem;
-  text-align: center;
-  font-weight: bold;
-  color: #333;
-  margin-top: 4rem;
+/*fonts*/
+@font-face {
+  font-family: 'Sansation';
+  src: url('/fonts/Sansation/Sansation-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
 }
 
-:root {
-  --primary: #0d6efd;
-  --gray-light: #f8f9fa;
-  --text-muted: #6c757d;
+@font-face {
+  font-family: 'Sansation';
+  src: url('/fonts/Sansation/Sansation-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Sansation';
+  src: url('/fonts/Sansation/Sansation-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Sansation';
+  src: url('/fonts/Sansation/Sansation-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/*base colors*/
+:root{
+  --base-clr: #faf9f9;
+  --line-clr: #cfcfcf;
+  --element-clr: #ffffff;
+  --text-clr: #222223;
+  --hover-clr: #222533;
+  --accent-clr: #5e63ff;
+  --secondary-text-clr: #b0b3c1;
+}
+
+/*reset*/
+*{
+  margin: 0;
+  padding: 0;
+}
+html {
+  box-sizing: border-box;
+  font-family: 'Sansation', sans-serif;
+  line-height: 1.5rem;
+}
+body{
+  min-height: 100vh;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  display:grid;
+  grid-template-columns: auto 1fr;
 }

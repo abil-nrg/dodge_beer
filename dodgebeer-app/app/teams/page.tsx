@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from "react";
 import TeamCard from "@/app/components/ui/TeamCard/TeamCard";
 import { API_ROUTE } from "@/app/api/all-routes";
-import { GetAllTeamsResponse } from "@backend/config/types";
+
 import styles from "@/app/teams/page.module.css";
+import { GetAllTeamsResponse } from "@/types/api";
 export default function TeamsPage() {
   const [data, setData] = useState<GetAllTeamsResponse | null>(null);
   const [isError, setIsError] = useState(false);
@@ -16,6 +17,7 @@ export default function TeamsPage() {
         setIsError(true);
         return;
       }
+      console.log(result);
       const data = result.data as GetAllTeamsResponse;
 
       setData(data || []);
@@ -30,7 +32,7 @@ export default function TeamsPage() {
 
   const hasTeams = Object.entries(data.teams).length > 0;
   const teamEntries = Object.entries(data.teams);
-
+  console.log("HERE");
   return (
     <div className={styles["teams-container"]}>
       {hasTeams ? (

@@ -1,0 +1,41 @@
+#sidebar{
+    height: 100vh;
+    width: 250px;
+    padding: 10px 1em;
+    background-color: var(--element-clr);
+    border-right: 1px solid var(--line-clr);
+    font-size: 1.2em;
+}
+
+/*remove bullet points*/
+#sidebar ul{
+    list-style: none;
+}
+
+/* logo and toggle button*/
+#sidebar > ul > li:first-child{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+    .logo{
+        font-weight: 700;
+    }
+}
+/* active sidebar item */
+#sidebar ul li.active a{
+    color: var(--accent-clr);
+}
+/* each sidebar item */
+#sidebar a, #sidebar .logo{
+    border-radius: .5em;
+    padding: .85em;
+    text-decoration: none;
+    color:var(--text-clr);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+/* sidebar item except for logo */
+#sidebar ul li:not(:first-child){
+
+}

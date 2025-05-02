@@ -1,11 +1,10 @@
 // COMPONENTS
-import Navbar from "./components/ui/Navbar";
-import BootstrapClient from "./components/BoostrapClient";
+import Sidebar from "./components/ui/Sidebar/Sidebar";
 // CSS
 import "./globals.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 // METADATA
 import type { Metadata } from "next";
+import React from "react";
 export const metadata: Metadata = {};
 
 export default function RootLayout({
@@ -16,9 +15,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main className="container mt-4">{children}</main>
-        <BootstrapClient />
+        <Sidebar />
+        <main>{children}</main>
       </body>
     </html>
   );

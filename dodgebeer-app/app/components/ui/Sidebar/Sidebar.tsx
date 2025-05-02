@@ -1,13 +1,19 @@
 "use client";
+// next
 import Link from "next/link";
+// icons
 import { MdDoubleArrow } from "react-icons/md";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { RiTeamLine } from "react-icons/ri";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { IoBeerOutline } from "react-icons/io5";
+// css
+import styles from "@/app/components/ui/Sidebar/Sidebar.module.css";
+import { style } from "dom-helpers";
+
 export default function Sidebar() {
   return (
-    <div className={"navbar"}>
+    <div id={styles.sidebar}>
       <ul>
         <li>
           <span className="logo">DodgeBeer</span>
@@ -15,7 +21,7 @@ export default function Sidebar() {
             <MdDoubleArrow />
           </button>
         </li>
-        <li className="active">
+        <li className={styles.active}>
           <Link href="/">
             <AiOutlineDashboard />
             <span>Dashboard</span>
