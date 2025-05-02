@@ -2,32 +2,43 @@ import { NextRequest, NextResponse } from "next/server";
 import { validate } from "@/app/api/middleware/validator";
 import { z, ZodObject, ZodRawShape, ZodSchema, ZodTypeAny } from "zod";
 
-// Type definition for controller/handler function
-// Takes validated data and returns a NextResponse
-type Handler<T> = (data: T) => Promise<NextResponse> | NextResponse;
+/**
+ * A generic controller function that receives validated input data and returns a Next.js response.
+ */
+type Handler<T> = (
+  data: T,
+) => Promise<NextResponse> | NextResponse | Promise<Response> | Response;
 
 /**
- * @param schema - Zod schema to validate the incoming data
- * @param handler - Controller func to handle the validated data
+ * Interface for defining a POST request handler with validation.
+ *
+ * @template T - The shape of the expected request body.
+ * @property schema - The Zod schema used to validate the incoming data.
+ * @property handler - The controller logic to execute with validated data.
  */
-export interface RequestHandlerType<T> {
+export interface PostRequestHandlerType<T> {
   schema: ZodSchema<T> | ZodTypeAny;
   handler: Handler<T>;
 }
 
 /**
- * A reusable request handler generator for API routes.
- * - Parses JSON from the request body
- * - Validates it against the provided Zod schema
- * - Calls the provided handler with validated data if valid
- * - Returns appropriate error responses if invalid
+ * Creates a reusable POST request handler for Next.js API routes.
  *
- * @returns An async function
+ * Features:
+ * - Parses request body based on `Content-Type`
+ * - Validates input data using the provided Zod schema
+ * - Handles validation errors gracefully
+ * - Calls the provided handler if validation succeeds
+ *
+ * @template T - The type inferred from the schema
+ * @param schema - Zod schema to validate the request body
+ * @param handler - Controller function to call with validated data
+ * @returns An async function that handles the API request and returns a `NextResponse`
  */
 export function standardPostRequestHandler<T>({
   schema,
   handler,
-}: RequestHandlerType<T>) {
+}: PostRequestHandlerType<T>) {
   return async function (req: NextRequest) {
     let data: any;
     const contentType = req.headers.get("content-type") || "";
@@ -36,13 +47,11 @@ export function standardPostRequestHandler<T>({
       if (contentType.includes("application/json")) {
         data = await req.json();
       } else if (contentType.includes("application/x-www-form-urlencoded")) {
-        // form-urlencoded
         const raw = await req.text();
         const params = new URLSearchParams(raw);
         data = {};
         for (const [key, value] of params.entries()) data[key] = value;
       } else if (contentType.includes("multipart/form-data")) {
-        // form-data
         const formData = await req.formData();
         data = {};
         for (const [key, value] of formData.entries()) data[key] = value;
@@ -59,22 +68,25 @@ export function standardPostRequestHandler<T>({
       );
     }
 
-    // validate the parsed JSON against the provided schema
     const result = schema.safeParse(data);
-
-    // Validator
     const validationError = validate(result);
 
-    // if validation failed, return error response
     if (validationError || !result.data) {
       return NextResponse.json(validationError);
     }
 
-    // call the handler/controller with validated data and return its response
     return handler(result.data);
   };
 }
 
+/**
+ * Validates query parameters from a `NextRequest` against a Zod schema.
+ *
+ * @template T - A Zod object schema representing required query parameters.
+ * @param req - The incoming Next.js request object.
+ * @param schema - Zod object schema to validate query parameters.
+ * @returns The parsed and validated query parameters as `z.infer<T>` or a `NextResponse` with an error.
+ */
 export function verifyQueryParams<T extends ZodObject<ZodRawShape>>(
   req: NextRequest,
   schema: T,

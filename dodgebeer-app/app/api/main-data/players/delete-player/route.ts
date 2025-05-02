@@ -1,9 +1,9 @@
-import { deletePlayer } from "@/backend/controllers/gameObjectController";
-import { DeletePlayerSchema } from "@/backend/config/types";
+import { deletePlayerHandler } from "@backend/controllers/PlayerAndTeamObjectMutationController";
 import { standardPostRequestHandler } from "@/app/api/middleware/requestHandler";
+import { DeletePlayerRequestSchema } from "@/types/player";
 
 // POST: Delete player
 export const POST = standardPostRequestHandler({
-  schema: DeletePlayerSchema,
-  handler: deletePlayer,
+  schema: DeletePlayerRequestSchema,
+  handler: deletePlayerHandler,
 });

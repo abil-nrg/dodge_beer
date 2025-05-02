@@ -1,9 +1,9 @@
-import { createPlayerHandler } from "@/backend/controllers/gameObjectController";
-import { CreatePlayerSchema } from "@/backend/config/types";
+import { createPlayerHandler } from "@backend/controllers/PlayerAndTeamObjectMutationController";
 import { standardPostRequestHandler } from "@/app/api/middleware/requestHandler";
+import { CreatePlayerRequestSchema } from "@/types/player";
 
 // POST: Add a new player
 export const POST = standardPostRequestHandler({
-  schema: CreatePlayerSchema,
+  schema: CreatePlayerRequestSchema,
   handler: createPlayerHandler,
 });

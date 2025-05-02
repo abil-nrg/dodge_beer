@@ -1,6 +1,6 @@
-import { clearMainData } from "@/backend/controllers/getterObjectController";
+import { clearMainDataHandler } from "@backend/controllers/PlayerAndTeamObjectRetrieveController";
 
-// GET: Clear main data
+// POST: Clear main data
 export async function POST() {
-  return clearMainData();
+  return clearMainDataHandler();
 }
