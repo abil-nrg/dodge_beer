@@ -24,6 +24,7 @@ import {
   deleteTeamService,
   removePlayerFromTeamService,
 } from "@backend/services/createPlayerAndTeamObject";
+import { INTERNAL_ERROR, OK_RESPONSE_JSON } from "@/types/api";
 
 /**
  * Type signature for mutation functions that mutate the main data file.
@@ -63,10 +64,10 @@ export async function wrapDataMutation<T>({
     const main_data = readMainDataFile();
     const updated_data = mutationFunc(main_data, body);
     overwriteFile(DATA_FILE, updated_data);
-    return NextResponse.json({ status: 200, data: updated_data as T });
+    return new Response(JSON.stringify(updated_data as T), OK_RESPONSE_JSON);
   } catch (err) {
     console.error(`${errorMsg}:`, err);
-    return NextResponse.json({ status: 500, error: errorMsg });
+    return new Response(JSON.stringify({ error: errorMsg }), INTERNAL_ERROR);
   }
 }
 
@@ -140,7 +141,7 @@ export async function removePlayerToTeamHandler(
   });
 }
 
-export async function deleteTeam(body: DeleteTeamRequest) {
+export async function deleteTeamHandler(body: DeleteTeamRequest) {
   return wrapDataMutation<DeleteTeamRequest>({
     body: body,
     mutationFunc: (data, request) => {
@@ -153,7 +154,7 @@ export async function deleteTeam(body: DeleteTeamRequest) {
   });
 }
 
-export async function deletePlayer(body: DeletePlayerRequest) {
+export async function deletePlayerHandler(body: DeletePlayerRequest) {
   return wrapDataMutation<DeletePlayerRequest>({
     body: body,
     mutationFunc: (data, request) => {

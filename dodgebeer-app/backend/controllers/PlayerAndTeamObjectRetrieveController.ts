@@ -17,6 +17,7 @@ import {
   GetAllTeamsResponseSchema,
   GetPlayerPhotoQueryRequest,
   GetPlayerPhotoResponse,
+  OK_RESPONSE_JSON,
 } from "@/types/api";
 
 /**
@@ -30,9 +31,9 @@ import {
  *
  * @returns JSON response with the cleared main data.
  */
-export function clearMainData() {
+export function clearMainDataHandler() {
   overwriteFile(DATA_FILE, MainDataConfig.EMPTY_DATA_FILE);
-  return getMainData();
+  return getMainDataHandler();
 }
 
 /**
@@ -40,10 +41,10 @@ export function clearMainData() {
  *
  * @returns JSON response with the main data.
  */
-export async function getMainData() {
+export async function getMainDataHandler() {
   const data = readMainDataFile();
 
-  return NextResponse.json({ status: 200, data: data });
+  return new Response(JSON.stringify(data), OK_RESPONSE_JSON);
 }
 
 /**
@@ -61,10 +62,10 @@ export async function getAllTeamsHandler() {
   const full_data = readMainDataFile();
   const response = GetAllTeamsResponseSchema.parse(full_data);
 
-  return NextResponse.json({
-    status: 200,
-    data: response as GetAllTeamsResponse,
-  });
+  return new Response(
+    JSON.stringify(response as GetAllTeamsResponse),
+    OK_RESPONSE_JSON,
+  );
 }
 
 /**
@@ -82,10 +83,10 @@ export async function getAllPlayersHandler() {
   const full_data = readMainDataFile();
   const response = GetAllPlayersSchema.parse(full_data);
 
-  return NextResponse.json({
-    status: 200,
-    data: response as GetAllPlayersResponse,
-  });
+  return new Response(
+    JSON.stringify(response as GetAllPlayersResponse),
+    OK_RESPONSE_JSON,
+  );
 }
 
 /**
@@ -111,8 +112,8 @@ export async function getPlayerPhotoHandler({
   const photo =
     player && player.photo ? player.photo : MainDataConfig.DEFAULT_PHOTO;
 
-  return NextResponse.json({
-    status: 200,
-    data: { photo: photo } as GetPlayerPhotoResponse,
-  });
+  return new Response(
+    JSON.stringify({ photo } as GetPlayerPhotoResponse),
+    OK_RESPONSE_JSON,
+  );
 }
