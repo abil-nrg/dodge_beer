@@ -1,7 +1,9 @@
 "use client";
+
 // next + react
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 // icons
 import { RxDoubleArrowLeft } from "react-icons/rx";
 import { AiOutlineDashboard } from "react-icons/ai";
@@ -18,6 +20,32 @@ export default function Sidebar() {
     setIsClosed((prev) => !prev);
   };
 
+  const currentPath = usePathname();
+
+  const iconStyles = styles["sidebar-icon-item"];
+  const sidebarItems = [
+    {
+      pathname: "/",
+      icon: <AiOutlineDashboard className={iconStyles} />,
+      text: "Dashboard",
+    },
+    {
+      pathname: "/teams",
+      icon: <RiTeamLine className={iconStyles} />,
+      text: "Teams",
+    },
+    {
+      pathname: "/players",
+      icon: <IoPersonCircleOutline className={iconStyles} />,
+      text: "Players",
+    },
+    {
+      pathname: "/games",
+      icon: <IoBeerOutline className={iconStyles} />,
+      text: "Games",
+    },
+  ];
+
   return (
     <div id={styles.sidebar} className={`${isClosed ? styles.close : ""}`}>
       <ul>
@@ -29,30 +57,22 @@ export default function Sidebar() {
             />
           </button>
         </li>
-        <li className={styles.active}>
-          <Link href="/">
-            <AiOutlineDashboard className={styles["sidebar-icon-item"]} />
-            <span>Dashboard</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/teams">
-            <RiTeamLine className={styles["sidebar-icon-item"]} />
-            <span>Teams</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/players">
-            <IoPersonCircleOutline className={styles["sidebar-icon-item"]} />
-            <span>Players</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/games">
-            <IoBeerOutline className={styles["sidebar-icon-item"]} />
-            <span>Games</span>
-          </Link>
-        </li>
+
+        {sidebarItems.map((path) => {
+          const isActivePage = currentPath === path.pathname;
+
+          return (
+            <li
+              key={path.pathname}
+              className={`${isActivePage ? styles.active : ""}`}
+            >
+              <Link href={path.pathname}>
+                {path.icon}
+                <span>{path.text}</span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -102,11 +102,3 @@
 .sidebar-icon-item{
     font-size: 1.5em;
 }
-
-@media (max-width: 800px) {
-    #sidebar{
-        height:60px;
-        width: 100%;
-        border-right: none;
-    }
-}
