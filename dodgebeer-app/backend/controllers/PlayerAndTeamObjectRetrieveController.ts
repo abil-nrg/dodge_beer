@@ -11,14 +11,17 @@ import {
 // types
 import { MainDataConfig } from "@/types/main-data";
 import {
+  BAD_REQUEST_JSON,
   GetAllPlayersResponse,
   GetAllPlayersSchema,
   GetAllTeamsResponse,
   GetAllTeamsResponseSchema,
+  GetPlayerByIdRequest,
   GetPlayerPhotoQueryRequest,
   GetPlayerPhotoResponse,
   OK_RESPONSE_JSON,
 } from "@/types/api";
+import { Player } from "@/types/player";
 
 /**
  * ----------------------------------------------------
@@ -85,6 +88,25 @@ export async function getAllPlayersHandler() {
 
   return new Response(
     JSON.stringify(response as GetAllPlayersResponse),
+    OK_RESPONSE_JSON,
+  );
+}
+
+export async function getPlayerByIdHandler({
+  player_id,
+}: GetPlayerByIdRequest) {
+  const full_data = readMainDataFile();
+  const players = GetAllPlayersSchema.parse(full_data).players;
+
+  const playerRequested = players[player_id];
+  if (!playerRequested) {
+    return new Response(
+      JSON.stringify({ error: `Player by id ${player_id} doesn't exist` }),
+      BAD_REQUEST_JSON,
+    );
+  }
+  return new Response(
+    JSON.stringify(playerRequested as Player),
     OK_RESPONSE_JSON,
   );
 }

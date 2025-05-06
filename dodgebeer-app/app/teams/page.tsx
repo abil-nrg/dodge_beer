@@ -12,16 +12,16 @@ export default function TeamsPage() {
   useEffect(() => {
     async function fetchTeams() {
       const response = await fetch(API_ROUTE.GET_ALL_TEAMS, { method: "GET" });
-      const result = await response.json();
-      if (result.status !== 200) {
+      if (response.status !== 200) {
         setIsError(true);
         return;
       }
-      console.log(result);
-      const data = result.data as GetAllTeamsResponse;
 
+      const data = (await response.json()) as GetAllTeamsResponse;
+      console.log(data);
       setData(data || []);
     }
+
     fetchTeams();
   }, []);
 
@@ -32,7 +32,7 @@ export default function TeamsPage() {
 
   const hasTeams = Object.entries(data.teams).length > 0;
   const teamEntries = Object.entries(data.teams);
-  console.log("HERE");
+
   return (
     <div className={styles["teams-container"]}>
       {hasTeams ? (

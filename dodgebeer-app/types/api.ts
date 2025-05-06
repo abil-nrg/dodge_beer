@@ -7,6 +7,11 @@ export const OK_RESPONSE_JSON = {
   headers: { "Content-Type": "application/json" },
 };
 
+export const BAD_REQUEST_JSON = {
+  status: 400,
+  headers: { "Content-Type": "application/json" },
+};
+
 export const INTERNAL_ERROR = {
   status: 500,
 };
@@ -26,6 +31,13 @@ export const GetAllPlayersSchema = MainDataSchema.pick({
 });
 
 export type GetAllPlayersResponse = z.infer<typeof GetAllPlayersSchema>;
+
+/* GET Player By ID */
+export const GetPlayerByIdRequestSchema = PlayerIdRequestSchema.pick({
+  player_id: true,
+});
+
+export type GetPlayerByIdRequest = z.infer<typeof GetPlayerByIdRequestSchema>;
 
 /* GET Player Photo */
 export const GetPlayerPhotoQueryRequestSchema = PlayerIdRequestSchema.pick({

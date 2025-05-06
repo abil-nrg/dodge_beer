@@ -11,6 +11,7 @@ export const API_ROUTE = {
   GET_MAIN_DATA: `${MAIN_DATA_API}/get-all`,
   // PLAYER ROUTES
   GET_ALL_PLAYERS: `${MAIN_DATA_API}${PLAYERS}`,
+  GET_PLAYER_BY_ID: `${MAIN_DATA_API}${PLAYERS}/get-player`,
   CREATE_PLAYER: `${MAIN_DATA_API}${PLAYERS}/create-player`,
   DELETE_PLAYER: `${MAIN_DATA_API}${PLAYERS}/delete-player`,
   GET_PLAYER_IMAGE: `${MAIN_DATA_API}${PLAYERS}/get-player-image`,
