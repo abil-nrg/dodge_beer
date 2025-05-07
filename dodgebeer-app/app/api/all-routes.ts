@@ -1,9 +1,11 @@
+import { ChangePlayerStatusInTeamRequest } from "@/types/team";
+
 const API = "/api";
 const MAIN_DATA_API = API + "/main-data";
 const PLAYERS = "/players";
 const TEAMS = "/teams";
 
-export const API_ROUTE = {
+const API_ROUTE = {
   API,
   // MAIN DATA FILE
   MAIN_DATA_API,
@@ -22,3 +24,56 @@ export const API_ROUTE = {
   ADD_PLAYER_TO_TEAM: `${MAIN_DATA_API}${TEAMS}/add-player-to-team`,
   REMOVE_PLAYER_FROM_TEAM: `${MAIN_DATA_API}${TEAMS}/remove-player-from-team`,
 };
+
+interface AddQueryParamToUrnProps {
+  base: string;
+  params: Record<string, string>;
+}
+
+export class ApiClient {
+  static #AddQueryParamToUrn({
+    base,
+    params,
+  }: AddQueryParamToUrnProps): string {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "http://localhost";
+
+    const url = new URL(base, origin);
+    Object.entries(params).forEach(([key, value]) => {
+      url.searchParams.append(key, value);
+    });
+    return url.toString();
+  }
+
+  static GetAllTeams() {
+    return fetch(API_ROUTE.GET_ALL_TEAMS, { method: "GET" });
+  }
+
+  static GetPLayerById(id: string) {
+    const urn = this.#AddQueryParamToUrn({
+      base: API_ROUTE.GET_PLAYER_BY_ID,
+      params: {
+        player_id: id,
+      },
+    });
+
+    return fetch(urn, {
+      method: "GET",
+    });
+  }
+
+  static removePlayerFromTeam(playerId: string, teamId: string) {
+    return fetch(API_ROUTE.REMOVE_PLAYER_FROM_TEAM, {
+      method: "POST",
+      body: JSON.stringify({
+        player_id: playerId,
+        team_id: teamId,
+      } as ChangePlayerStatusInTeamRequest),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+}
