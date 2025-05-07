@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import TeamCard from "@/app/components/ui/TeamCard/TeamCard";
-import { API_ROUTE } from "@/app/api/all-routes";
+import { ApiClient } from "@/app/api/all-routes";
 
 import styles from "@/app/teams/page.module.css";
 import { GetAllTeamsResponse } from "@/types/api";
@@ -11,7 +11,7 @@ export default function TeamsPage() {
 
   useEffect(() => {
     async function fetchTeams() {
-      const response = await fetch(API_ROUTE.GET_ALL_TEAMS, { method: "GET" });
+      const response = await ApiClient.GetAllTeams();
       if (response.status !== 200) {
         setIsError(true);
         return;
@@ -39,8 +39,9 @@ export default function TeamsPage() {
         teamEntries.map(([teamId, team]) => (
           <TeamCard
             key={teamId}
+            team_id={teamId}
             team_name={team.team_name}
-            players={team.players}
+            playerIds={team.players}
           />
         ))
       ) : (

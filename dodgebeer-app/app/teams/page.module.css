@@ -1,10 +1,10 @@
 .teams-container{
-    border: #333333 1px solid;
     display: flex;
     height: 100vh;
     padding: 2em 0;
     flex-direction: row;
     flex-wrap: wrap;
+
     justify-content: space-evenly;
     gap: 50px
 }
