@@ -9,7 +9,11 @@ import {
   readMainDataFile,
 } from "@/backend/services/readFile";
 // types
-import { CreatePlayerRequest, DeletePlayerRequest } from "@/types/player";
+import {
+  CreatePlayerRequest,
+  CreatePlayerResponse,
+  DeletePlayerRequest,
+} from "@/types/player";
 import {
   ChangePlayerStatusInTeamRequest,
   CreateTeamRequest,
@@ -25,20 +29,25 @@ import {
   removePlayerFromTeamService,
 } from "@backend/services/createPlayerAndTeamObject";
 import { INTERNAL_ERROR, OK_RESPONSE_JSON } from "@/types/api";
+import { MainDataType } from "@/types/main-data";
+import { z } from "zod";
 
 /**
  * Type signature for mutation functions that mutate the main data file.
  * These functions receive the current data and request specific payload,
  * and return updated data to be saved.
  */
-type MutationHandler<T = any> = (data: any, reqData: T) => any;
+type MutationHandler<T, R extends { data: MainDataType }> = (
+  data: MainDataType,
+  reqData: T,
+) => R;
 
 /**
  * Interface for the input to the reusable data-mutation wrapper.
  */
-interface FuncWrapper<T = any> {
+interface FuncWrapper<T, R extends { data: MainDataType }> {
   body: T; // Incoming request
-  mutationFunc: MutationHandler<T>; // Logic function that performs the mutation
+  mutationFunc: MutationHandler<T, R>; // Logic function that performs the mutation
   errorMsg: string; // Error message to display on failure
 }
 
@@ -55,16 +64,24 @@ interface FuncWrapper<T = any> {
  * @param errorMsg     Message to include in error response/log if mutation fails
  * @returns            JSON response containing updated data or error
  */
-export async function wrapDataMutation<T>({
+export async function wrapDataMutation<T, R extends { data: MainDataType }>({
   body,
   mutationFunc,
   errorMsg,
-}: FuncWrapper<T>) {
+}: FuncWrapper<T, R>): Promise<Response> {
   try {
     const main_data = readMainDataFile();
-    const updated_data = mutationFunc(main_data, body);
+    const mutationResult = mutationFunc(main_data, body);
+
+    const { data: updated_data, ...rest } = mutationResult;
+    const [[returnKey, returnValue]] = Object.entries(rest);
+
     overwriteFile(DATA_FILE, updated_data);
-    return new Response(JSON.stringify(updated_data as T), OK_RESPONSE_JSON);
+
+    return new Response(
+      JSON.stringify({ [returnKey]: returnValue } as R),
+      OK_RESPONSE_JSON,
+    );
   } catch (err) {
     console.error(`${errorMsg}:`, err);
     return new Response(JSON.stringify({ error: errorMsg }), INTERNAL_ERROR);
@@ -77,7 +94,7 @@ export async function wrapDataMutation<T>({
  * API handler for creating a new player and storing it in the main data file.
  */
 export async function createPlayerHandler(body: CreatePlayerRequest) {
-  return wrapDataMutation<CreatePlayerRequest>({
+  return wrapDataMutation<CreatePlayerRequest, CreatePlayerResponse>({
     body: body,
     mutationFunc: (data, request) => {
       return createPlayerObjectService({

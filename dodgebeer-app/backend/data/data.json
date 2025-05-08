@@ -1,26 +1,18 @@
 {
-  "player_count": 9,
-  "team_count": 5,
+  "player_count": 3,
+  "team_count": 7,
   "game_count": 0,
   "players": {
     "player1": {
       "name": "p1",
-      "photo": "default.jpg"
+      "photo": "photo.jpg"
     },
     "player2": {
       "name": "p2",
-      "photo": "default.jpg"
+      "photo": "photo.jpg"
     },
     "player3": {
-      "name": "p3",
-      "photo": "default.jpg"
-    },
-    "player4": {
-      "name": "p4",
-      "photo": "default.jpg"
-    },
-    "player9": {
-      "name": "Ali",
+      "name": "p2",
       "photo": "photo.jpg"
     }
   },
@@ -28,27 +20,31 @@
     "team1": {
       "team_name": "t1",
       "players": [
-        "player1",
-        "player2",
-        "player3"
+        "player2"
       ]
     },
     "team2": {
-      "team_name": "t2",
-      "players": [
-        "player9"
-      ]
+      "team_name": "t1",
+      "players": []
     },
     "team3": {
-      "team_name": "Winners",
+      "team_name": "t1",
       "players": []
     },
     "team4": {
-      "team_name": "Team 3",
+      "team_name": "t1",
       "players": []
     },
     "team5": {
-      "team_name": "Team 4",
+      "team_name": "t1",
+      "players": []
+    },
+    "team6": {
+      "team_name": "t1",
+      "players": []
+    },
+    "team7": {
+      "team_name": "t1",
       "players": []
     }
   }

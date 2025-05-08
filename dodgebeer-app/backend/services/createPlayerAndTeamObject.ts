@@ -33,6 +33,10 @@ interface CreatePlayerInterface {
   body: CreatePlayerRequest;
 }
 
+interface CreatePlayerReturnInterface {
+  data: MainDataType;
+  player_key: string;
+}
 /**
  * Adds a new player to the data object.
  */
@@ -46,7 +50,7 @@ export function createPlayerObjectService({
     name: body.player_name,
     photo: body.player_photo || MainDataConfig.DEFAULT_PHOTO,
   } as Player;
-  return data;
+  return { data: data, player_key: playerKey } as CreatePlayerReturnInterface;
 }
 
 /**
@@ -62,7 +66,10 @@ interface CreateTeamInterface {
   data: MainDataType;
   body: CreateTeamRequest;
 }
-
+interface CreateTeamReturnInterface {
+  data: MainDataType;
+  team_key: string;
+}
 /**
  * Adds a new team to the data object.
  */
@@ -73,7 +80,7 @@ export function createTeamObjectService({ data, body }: CreateTeamInterface) {
     team_name: body.team_name,
     players: [],
   } as Team;
-  return data;
+  return { data: data, team_key: teamKey } as CreateTeamReturnInterface;
 }
 
 /**
@@ -88,6 +95,10 @@ export function createTeamObjectService({ data, body }: CreateTeamInterface) {
 interface ChangePlayerInTeamInterface {
   data: MainDataType;
   body: ChangePlayerStatusInTeamRequest;
+}
+interface ChangePlayerInTeamReturnInterface {
+  data: MainDataType;
+  player_key: string;
 }
 
 /**
@@ -106,7 +117,10 @@ export function addPlayerToTeamService({
   }
 
   data.teams[teamId].players.push(playerId);
-  return data;
+  return {
+    data: data,
+    player_key: playerId,
+  } as ChangePlayerInTeamReturnInterface;
 }
 
 /**
@@ -128,7 +142,10 @@ export function removePlayerFromTeamService({
   const index = teamPlayers.findIndex((player_id) => player_id == playerId);
   if (index > -1) teamPlayers.splice(index, 1);
 
-  return data;
+  return {
+    data: data,
+    player_key: playerId,
+  } as ChangePlayerInTeamReturnInterface;
 }
 
 /**
@@ -136,6 +153,14 @@ export function removePlayerFromTeamService({
  * DELETING TEAM AND PLAYER
  * -------------------------------------------------------------
  */
+
+/**
+ *  Delete Object Return Interface
+ */
+interface DeleteObjectReturnInterface {
+  data: MainDataType;
+  success: boolean;
+}
 
 /**
  * Interface for deleting a team.
@@ -150,7 +175,7 @@ interface DeleteTeamInterface {
  */
 export function deleteTeamService({ data, body }: DeleteTeamInterface) {
   delete data.teams[body.team_id];
-  return data;
+  return { data, success: true };
 }
 
 /**
@@ -177,5 +202,5 @@ export function deletePlayerService({ data, body }: DeletePlayerInterface) {
     }
   }
 
-  return data;
+  return { data, success: true };
 }

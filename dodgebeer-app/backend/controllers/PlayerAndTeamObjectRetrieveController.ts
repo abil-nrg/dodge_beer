@@ -13,15 +13,13 @@ import { MainDataConfig } from "@/types/main-data";
 import {
   BAD_REQUEST_JSON,
   GetAllPlayersResponse,
-  GetAllPlayersSchema,
+  GetAllPlayersResponseSchema,
   GetAllTeamsResponse,
   GetAllTeamsResponseSchema,
   GetPlayerByIdRequest,
-  GetPlayerPhotoQueryRequest,
-  GetPlayerPhotoResponse,
+  GetPlayerByIdResponse,
   OK_RESPONSE_JSON,
 } from "@/types/api";
-import { Player } from "@/types/player";
 
 /**
  * ----------------------------------------------------
@@ -63,12 +61,10 @@ export async function getMainDataHandler() {
  */
 export async function getAllTeamsHandler() {
   const full_data = readMainDataFile();
-  const response = GetAllTeamsResponseSchema.parse(full_data);
+  const response: GetAllTeamsResponse =
+    GetAllTeamsResponseSchema.parse(full_data);
 
-  return new Response(
-    JSON.stringify(response as GetAllTeamsResponse),
-    OK_RESPONSE_JSON,
-  );
+  return new Response(JSON.stringify(response), OK_RESPONSE_JSON);
 }
 
 /**
@@ -84,58 +80,24 @@ export async function getAllTeamsHandler() {
  */
 export async function getAllPlayersHandler() {
   const full_data = readMainDataFile();
-  const response = GetAllPlayersSchema.parse(full_data);
+  const response: GetAllPlayersResponse =
+    GetAllPlayersResponseSchema.parse(full_data);
 
-  return new Response(
-    JSON.stringify(response as GetAllPlayersResponse),
-    OK_RESPONSE_JSON,
-  );
+  return new Response(JSON.stringify(response), OK_RESPONSE_JSON);
 }
 
 export async function getPlayerByIdHandler({
   player_id,
 }: GetPlayerByIdRequest) {
   const full_data = readMainDataFile();
-  const players = GetAllPlayersSchema.parse(full_data).players;
+  const players = GetAllPlayersResponseSchema.parse(full_data).players;
 
-  const playerRequested = players[player_id];
+  const playerRequested: GetPlayerByIdResponse | null = players[player_id];
   if (!playerRequested) {
     return new Response(
       JSON.stringify({ error: `Player by id ${player_id} doesn't exist` }),
       BAD_REQUEST_JSON,
     );
   }
-  return new Response(
-    JSON.stringify(playerRequested as Player),
-    OK_RESPONSE_JSON,
-  );
-}
-
-/**
- * ----------------------------------------------------
- * PLAYER'S PHOTO
- * ----------------------------------------------------
- */
-
-/**
- * Returns the photo URL for a specific player by ID.
- * If the player does not exist or has no photo, returns the default photo.
- *
- * @param player_id - The ID of the player to retrieve the photo for.
- * @returns JSON response with the player's photo URL.
- */
-export async function getPlayerPhotoHandler({
-  player_id,
-}: GetPlayerPhotoQueryRequest) {
-  const full_data = readMainDataFile();
-  const data = GetAllPlayersSchema.parse(full_data).players;
-
-  const player = data[player_id];
-  const photo =
-    player && player.photo ? player.photo : MainDataConfig.DEFAULT_PHOTO;
-
-  return new Response(
-    JSON.stringify({ photo } as GetPlayerPhotoResponse),
-    OK_RESPONSE_JSON,
-  );
+  return new Response(JSON.stringify(playerRequested), OK_RESPONSE_JSON);
 }
