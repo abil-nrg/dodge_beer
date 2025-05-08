@@ -25,33 +25,18 @@ export const GetAllTeamsResponseSchema = MainDataSchema.pick({
 export type GetAllTeamsResponse = z.infer<typeof GetAllTeamsResponseSchema>;
 
 /* GET PLAYERS */
-export const GetAllPlayersSchema = MainDataSchema.pick({
+export const GetAllPlayersResponseSchema = MainDataSchema.pick({
   player_count: true,
   players: true,
 });
 
-export type GetAllPlayersResponse = z.infer<typeof GetAllPlayersSchema>;
+export type GetAllPlayersResponse = z.infer<typeof GetAllPlayersResponseSchema>;
 
-/* GET Player By ID */
+/* GET Player By ID Request and Response */
 export const GetPlayerByIdRequestSchema = PlayerIdRequestSchema.pick({
   player_id: true,
 });
 
 export type GetPlayerByIdRequest = z.infer<typeof GetPlayerByIdRequestSchema>;
 
-/* GET Player Photo */
-export const GetPlayerPhotoQueryRequestSchema = PlayerIdRequestSchema.pick({
-  player_id: true,
-});
-
-export type GetPlayerPhotoQueryRequest = z.infer<
-  typeof GetPlayerPhotoQueryRequestSchema
->;
-
-export const GetPlayerPhotoResponseSchema = PlayerSchema.pick({
-  photo: true,
-});
-
-export type GetPlayerPhotoResponse = z.infer<
-  typeof GetPlayerPhotoResponseSchema
->;
+export type GetPlayerByIdResponse = z.infer<typeof PlayerSchema>;
