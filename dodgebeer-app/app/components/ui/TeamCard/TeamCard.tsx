@@ -14,7 +14,7 @@ interface TeamProps {
 const DEFAULT_PHOTO = MainDataConfig.DEFAULT_PHOTO;
 
 async function removePlayerFromTeam(playerId: string, teamId: string) {
-  ApiClient.removePlayerFromTeam(playerId, teamId);
+  await ApiClient.removePlayerFromTeam(playerId, teamId);
 }
 
 export default function TeamCard({ team_id, team_name, playerIds }: TeamProps) {
