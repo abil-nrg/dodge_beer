@@ -9,17 +9,22 @@ import {
   readMainDataFile,
 } from "@backend/services/readFile";
 // types
-import { MainDataConfig } from "@/types/main-data";
+import { MainDataConfig, MainDataType } from "@/types/main-data";
 import {
-  BAD_REQUEST_JSON,
+  ApiError,
+  ApiResponse,
+  ApiSuccess,
+  HTTP_CODE,
+  ResponseWithErrorInData,
+} from "@/types/api";
+import { GetAllTeamsResponse, GetAllTeamsResponseSchema } from "@/types/team";
+import {
   GetAllPlayersResponse,
   GetAllPlayersResponseSchema,
-  GetAllTeamsResponse,
-  GetAllTeamsResponseSchema,
   GetPlayerByIdRequest,
   GetPlayerByIdResponse,
-  OK_RESPONSE_JSON,
-} from "@/types/api";
+} from "@/types/player";
+import { ERROR_MESSAGE } from "@/types/message";
 
 /**
  * ----------------------------------------------------
@@ -42,10 +47,12 @@ export function clearMainDataHandler() {
  *
  * @returns JSON response with the main data.
  */
-export async function getMainDataHandler() {
+export async function getMainDataHandler(): Promise<
+  NextResponse<ApiResponse<MainDataType>>
+> {
   const data = readMainDataFile();
 
-  return new Response(JSON.stringify(data), OK_RESPONSE_JSON);
+  return ApiSuccess<MainDataType>(data);
 }
 
 /**
@@ -59,12 +66,14 @@ export async function getMainDataHandler() {
  *
  * @returns JSON response containing all teams.
  */
-export async function getAllTeamsHandler() {
+export async function getAllTeamsHandler(): Promise<
+  NextResponse<ApiResponse<GetAllTeamsResponse>>
+> {
   const full_data = readMainDataFile();
   const response: GetAllTeamsResponse =
     GetAllTeamsResponseSchema.parse(full_data);
 
-  return new Response(JSON.stringify(response), OK_RESPONSE_JSON);
+  return ApiSuccess<GetAllTeamsResponse>(response);
 }
 
 /**
@@ -78,26 +87,30 @@ export async function getAllTeamsHandler() {
  *
  * @returns JSON response containing all players.
  */
-export async function getAllPlayersHandler() {
+export async function getAllPlayersHandler(): Promise<
+  NextResponse<ApiResponse<GetAllPlayersResponse>>
+> {
   const full_data = readMainDataFile();
   const response: GetAllPlayersResponse =
     GetAllPlayersResponseSchema.parse(full_data);
 
-  return new Response(JSON.stringify(response), OK_RESPONSE_JSON);
+  return ApiSuccess<GetAllPlayersResponse>(response);
 }
 
 export async function getPlayerByIdHandler({
   player_id,
-}: GetPlayerByIdRequest) {
+}: GetPlayerByIdRequest): Promise<
+  NextResponse<ApiResponse<GetPlayerByIdResponse | ResponseWithErrorInData>>
+> {
   const full_data = readMainDataFile();
   const players = GetAllPlayersResponseSchema.parse(full_data).players;
 
-  const playerRequested: GetPlayerByIdResponse | null = players[player_id];
+  const playerRequested = players[player_id];
   if (!playerRequested) {
-    return new Response(
-      JSON.stringify({ error: `Player by id ${player_id} doesn't exist` }),
-      BAD_REQUEST_JSON,
-    );
+    return ApiError({
+      status: HTTP_CODE.NOT_FOUND,
+      message: ERROR_MESSAGE.PLAYER_DOESNT_EXIST(player_id),
+    });
   }
-  return new Response(JSON.stringify(playerRequested), OK_RESPONSE_JSON);
+  return ApiSuccess<GetPlayerByIdResponse>(playerRequested);
 }

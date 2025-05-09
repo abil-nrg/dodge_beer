@@ -2,6 +2,7 @@
 
 // util
 import {
+  checkIfPlayerIsInTeam,
   checkIfTeamAndPlayerExists,
   checkIfTeamIdExists,
 } from "@backend/utils/gameObjectExistsUtil";
@@ -11,7 +12,6 @@ import {
   CreatePlayerRequest,
   CreatePlayerResponse,
   DeletePlayerRequest,
-  Player,
 } from "@/types/player";
 import {
   ChangePlayerStatusInTeamRequest,
@@ -20,8 +20,18 @@ import {
   CreateTeamResponse,
   DeleteTeamRequest,
   DeleteTeamOrPlayerResponse,
-  Team,
 } from "@/types/team";
+
+/**
+ * A generic wrapper type for mutation return values.
+ * Each mutation must return updated main data and a typed response payload.
+ *
+ * @template ResponseType - The response type returned to the client
+ */
+export interface MutationReturn<ResponseType> {
+  data: MainDataType;
+  response: ResponseType;
+}
 
 /**
  * -------------------------------------------------------------
@@ -37,10 +47,7 @@ interface CreatePlayerInterface {
   body: CreatePlayerRequest;
 }
 
-interface CreatePlayerReturnInterface {
-  data: MainDataType;
-  response: CreatePlayerResponse;
-}
+type CreatePlayerReturnInterface = MutationReturn<CreatePlayerResponse>;
 /**
  * Adds a new player to the data object.
  */
@@ -53,7 +60,7 @@ export function createPlayerObjectService({
   data.players[playerKey] = {
     name: body.player_name,
     photo: body.player_photo || MainDataConfig.DEFAULT_PHOTO,
-  } as Player;
+  };
   return {
     data: data,
     response: { player_key: playerKey },
@@ -73,10 +80,7 @@ interface CreateTeamInterface {
   data: MainDataType;
   body: CreateTeamRequest;
 }
-interface CreateTeamReturnInterface {
-  data: MainDataType;
-  response: CreateTeamResponse;
-}
+type CreateTeamReturnInterface = MutationReturn<CreateTeamResponse>;
 /**
  * Adds a new team to the data object.
  */
@@ -86,7 +90,7 @@ export function createTeamObjectService({ data, body }: CreateTeamInterface) {
   data.teams[teamKey] = {
     team_name: body.team_name,
     players: [],
-  } as Team;
+  };
   return {
     data: data,
     response: { team_key: teamKey },
@@ -106,11 +110,9 @@ interface ChangePlayerInTeamInterface {
   data: MainDataType;
   body: ChangePlayerStatusInTeamRequest;
 }
-interface ChangePlayerInTeamReturnInterface {
-  data: MainDataType;
-  response: ChangePlayerStatusInTeamResponse;
-}
 
+type ChangePlayerInTeamReturnInterface =
+  MutationReturn<ChangePlayerStatusInTeamResponse>;
 /**
  * Adds a player to a team.
  * Throws an error if the team or player does not exist.
@@ -126,10 +128,14 @@ export function addPlayerToTeamService({
     throw new Error("Team or Player don't exist in file");
   }
 
+  if (checkIfPlayerIsInTeam(data, teamId, playerId)) {
+    throw new Error("Trying to add player to team again ");
+  }
+
   data.teams[teamId].players.push(playerId);
   return {
     data: data,
-    response: { player_key: playerId },
+    response: { players: data.teams[teamId].players },
   } as ChangePlayerInTeamReturnInterface;
 }
 
@@ -154,7 +160,7 @@ export function removePlayerFromTeamService({
 
   return {
     data: data,
-    response: { player_key: playerId },
+    response: { players: teamPlayers },
   } as ChangePlayerInTeamReturnInterface;
 }
 
@@ -165,19 +171,17 @@ export function removePlayerFromTeamService({
  */
 
 /**
+ *  Delete Object Return Interface
+ */
+type DeleteTeamOrPlayerReturnInterface =
+  MutationReturn<DeleteTeamOrPlayerResponse>;
+
+/**
  * Interface for deleting a team.
  */
 interface DeleteTeamInterface {
   data: MainDataType;
   body: DeleteTeamRequest;
-}
-
-/**
- *  Delete Object Return Interface
- */
-interface DeleteTeamOrPlayerReturnInterface {
-  data: MainDataType;
-  response: DeleteTeamOrPlayerResponse;
 }
 
 /**

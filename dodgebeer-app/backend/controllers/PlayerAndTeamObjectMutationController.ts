@@ -16,7 +16,10 @@ import {
 } from "@/types/player";
 import {
   ChangePlayerStatusInTeamRequest,
+  ChangePlayerStatusInTeamResponse,
   CreateTeamRequest,
+  CreateTeamResponse,
+  DeleteTeamOrPlayerResponse,
   DeleteTeamRequest,
 } from "@/types/team";
 // logic & data layer
@@ -26,65 +29,101 @@ import {
   createTeamObjectService,
   deletePlayerService,
   deleteTeamService,
+  MutationReturn,
   removePlayerFromTeamService,
 } from "@backend/services/createPlayerAndTeamObject";
-import { INTERNAL_ERROR, OK_RESPONSE_JSON } from "@/types/api";
+import {
+  ApiError,
+  ApiResponse,
+  ApiSuccess,
+  HTTP_CODE,
+  ResponseWithErrorInData,
+} from "@/types/api";
 import { MainDataType } from "@/types/main-data";
-import { z } from "zod";
 
 /**
  * Type signature for mutation functions that mutate the main data file.
- * These functions receive the current data and request specific payload,
- * and return updated data to be saved.
+ *
+ * These functions:
+ *  - Receive the current data and request-specific input
+ *  - Mutate the data
+ *  - Return the updated data and a typed response payload
+ *
+ * @template T - The shape of the incoming request payload
+ * @template R - The shape of the mutation's response
  */
-type MutationHandler<T, R extends { data: MainDataType }> = (
+type MutationHandler<T, R> = (
   data: MainDataType,
   reqData: T,
-) => R;
+) => MutationReturn<R>;
+
+//-----------------------------------------------------------------------------//
 
 /**
- * Interface for the input to the reusable data-mutation wrapper.
+ * Wrapper object passed to the reusable mutation handler function.
+ *
+ * @template T - The request payload type
+ * @template R - The mutation response type
  */
-interface FuncWrapper<T, R extends { data: MainDataType }> {
-  body: T; // Incoming request
-  mutationFunc: MutationHandler<T, R>; // Logic function that performs the mutation
-  errorMsg: string; // Error message to display on failure
+interface FuncWrapper<T, R> {
+  /** Incoming request payload */
+  body: T;
+
+  /** The mutation function that performs logic and returns updated data + response */
+  mutationFunc: MutationHandler<T, R>;
+
+  /** Human-readable error message shown on failure */
+  errorMsg: string;
 }
 
+//-----------------------------------------------------------------------------//
+
 /**
- * Shared wrapper to handle common backend tasks:
- *  1. Parse request body
- *  2. Read data from disk
- *  3. Pass to a logic function
- *  4. Save updated data to disk
- *  5. Return  success or error response
+ * Shared wrapper for performing backend mutations with consistent handling.
  *
- * @param req          The incoming Next.js API request
- * @param mutationFunc Function to apply  logic and return updated data
- * @param errorMsg     Message to include in error response/log if mutation fails
- * @returns            JSON response containing updated data or error
+ * This function:
+ *  1. Reads the main data file from disk
+ *  2. Executes a typed mutation function with the request payload
+ *  3. Saves the updated data back to disk
+ *  4. Returns a typed JSON response (success or structured error)
+ *
+ * All mutation functions must return an object of the form:
+ *   { data: MainDataType, response: R }
+ *
+ * @template T - The shape of the incoming request body
+ * @template R - The shape of the successful mutation response
+ *
+ * @param body         The request payload passed to the mutation function
+ * @param mutationFunc A logic function that mutates the data and returns a response
+ * @param errorMsg     A descriptive message logged and returned if an error occurs
+ *
+ * @returns A Next.js JSON response wrapping ApiResponse<R> on success,
+ *          or ApiResponse<ResponseWithErrorInData> on failure
  */
-export async function wrapDataMutation<T, R extends { data: MainDataType }>({
+export async function wrapDataMutation<T, R>({
   body,
   mutationFunc,
   errorMsg,
-}: FuncWrapper<T, R>): Promise<Response> {
+}: FuncWrapper<T, R>): Promise<
+  NextResponse<ApiResponse<R | ResponseWithErrorInData>>
+> {
   try {
     const main_data = readMainDataFile();
     const mutationResult = mutationFunc(main_data, body);
 
-    const { data: updated_data, ...rest } = mutationResult;
-    const [[returnKey, returnValue]] = Object.entries(rest);
+    const { data: updated_data, response: responseData } = mutationResult;
 
     overwriteFile(DATA_FILE, updated_data);
 
-    return new Response(
-      JSON.stringify({ [returnKey]: returnValue } as R),
-      OK_RESPONSE_JSON,
-    );
+    return ApiSuccess<R>(responseData);
   } catch (err) {
-    console.error(`${errorMsg}:`, err);
-    return new Response(JSON.stringify({ error: errorMsg }), INTERNAL_ERROR);
+    console.error(`Caught error in ${mutationFunc.name}.\n
+                   Response error output ${errorMsg}\n
+                   Func Error: ${err}\n`);
+    return ApiError({
+      status: HTTP_CODE.INTERNAL_SERVER_ERROR,
+      message: errorMsg,
+    });
   }
 }
 
@@ -93,9 +132,9 @@ export async function wrapDataMutation<T, R extends { data: MainDataType }>({
 /**
  * API handler for creating a new player and storing it in the main data file.
  */
-export async function createPlayerHandler(body: CreatePlayerRequest) {
+export async function createPlayerHandler(requestBody: CreatePlayerRequest) {
   return wrapDataMutation<CreatePlayerRequest, CreatePlayerResponse>({
-    body: body,
+    body: requestBody,
     mutationFunc: (data, request) => {
       return createPlayerObjectService({
         data,
@@ -109,9 +148,9 @@ export async function createPlayerHandler(body: CreatePlayerRequest) {
 /**
  * API handler for creating a new team and storing it in the main data file.
  */
-export async function createTeamHandler(body: CreateTeamRequest) {
-  return wrapDataMutation<CreateTeamRequest>({
-    body: body,
+export async function createTeamHandler(requestBody: CreateTeamRequest) {
+  return wrapDataMutation<CreateTeamRequest, CreateTeamResponse>({
+    body: requestBody,
     mutationFunc: (data, request) => {
       return createTeamObjectService({
         data,
@@ -126,10 +165,13 @@ export async function createTeamHandler(body: CreateTeamRequest) {
  * API handler for adding a player to a team.
  */
 export async function addPlayerToTeamHandler(
-  body: ChangePlayerStatusInTeamRequest,
+  requestBody: ChangePlayerStatusInTeamRequest,
 ) {
-  return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
-    body: body,
+  return wrapDataMutation<
+    ChangePlayerStatusInTeamRequest,
+    ChangePlayerStatusInTeamResponse
+  >({
+    body: requestBody,
     mutationFunc: (data, request) => {
       return addPlayerToTeamService({
         data,
@@ -144,10 +186,13 @@ export async function addPlayerToTeamHandler(
  * API handler for removing a player from a team.
  */
 export async function removePlayerToTeamHandler(
-  body: ChangePlayerStatusInTeamRequest,
+  requestBody: ChangePlayerStatusInTeamRequest,
 ) {
-  return wrapDataMutation<ChangePlayerStatusInTeamRequest>({
-    body: body,
+  return wrapDataMutation<
+    ChangePlayerStatusInTeamRequest,
+    ChangePlayerStatusInTeamResponse
+  >({
+    body: requestBody,
     mutationFunc: (data, request) => {
       return removePlayerFromTeamService({
         data,
@@ -158,9 +203,9 @@ export async function removePlayerToTeamHandler(
   });
 }
 
-export async function deleteTeamHandler(body: DeleteTeamRequest) {
-  return wrapDataMutation<DeleteTeamRequest>({
-    body: body,
+export async function deleteTeamHandler(requestBody: DeleteTeamRequest) {
+  return wrapDataMutation<DeleteTeamRequest, DeleteTeamOrPlayerResponse>({
+    body: requestBody,
     mutationFunc: (data, request) => {
       return deleteTeamService({
         data,
@@ -171,9 +216,9 @@ export async function deleteTeamHandler(body: DeleteTeamRequest) {
   });
 }
 
-export async function deletePlayerHandler(body: DeletePlayerRequest) {
-  return wrapDataMutation<DeletePlayerRequest>({
-    body: body,
+export async function deletePlayerHandler(requestBody: DeletePlayerRequest) {
+  return wrapDataMutation<DeletePlayerRequest, DeleteTeamOrPlayerResponse>({
+    body: requestBody,
     mutationFunc: (data, request) => {
       return deletePlayerService({
         data,
