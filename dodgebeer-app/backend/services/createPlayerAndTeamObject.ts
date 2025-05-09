@@ -9,13 +9,17 @@ import {
 import { MainDataConfig, MainDataType } from "@/types/main-data";
 import {
   CreatePlayerRequest,
+  CreatePlayerResponse,
   DeletePlayerRequest,
   Player,
 } from "@/types/player";
 import {
   ChangePlayerStatusInTeamRequest,
+  ChangePlayerStatusInTeamResponse,
   CreateTeamRequest,
+  CreateTeamResponse,
   DeleteTeamRequest,
+  DeleteTeamOrPlayerResponse,
   Team,
 } from "@/types/team";
 
@@ -35,7 +39,7 @@ interface CreatePlayerInterface {
 
 interface CreatePlayerReturnInterface {
   data: MainDataType;
-  player_key: string;
+  response: CreatePlayerResponse;
 }
 /**
  * Adds a new player to the data object.
@@ -50,7 +54,10 @@ export function createPlayerObjectService({
     name: body.player_name,
     photo: body.player_photo || MainDataConfig.DEFAULT_PHOTO,
   } as Player;
-  return { data: data, player_key: playerKey } as CreatePlayerReturnInterface;
+  return {
+    data: data,
+    response: { player_key: playerKey },
+  } as CreatePlayerReturnInterface;
 }
 
 /**
@@ -68,7 +75,7 @@ interface CreateTeamInterface {
 }
 interface CreateTeamReturnInterface {
   data: MainDataType;
-  team_key: string;
+  response: CreateTeamResponse;
 }
 /**
  * Adds a new team to the data object.
@@ -80,7 +87,10 @@ export function createTeamObjectService({ data, body }: CreateTeamInterface) {
     team_name: body.team_name,
     players: [],
   } as Team;
-  return { data: data, team_key: teamKey } as CreateTeamReturnInterface;
+  return {
+    data: data,
+    response: { team_key: teamKey },
+  } as CreateTeamReturnInterface;
 }
 
 /**
@@ -98,7 +108,7 @@ interface ChangePlayerInTeamInterface {
 }
 interface ChangePlayerInTeamReturnInterface {
   data: MainDataType;
-  player_key: string;
+  response: ChangePlayerStatusInTeamResponse;
 }
 
 /**
@@ -119,7 +129,7 @@ export function addPlayerToTeamService({
   data.teams[teamId].players.push(playerId);
   return {
     data: data,
-    player_key: playerId,
+    response: { player_key: playerId },
   } as ChangePlayerInTeamReturnInterface;
 }
 
@@ -144,7 +154,7 @@ export function removePlayerFromTeamService({
 
   return {
     data: data,
-    player_key: playerId,
+    response: { player_key: playerId },
   } as ChangePlayerInTeamReturnInterface;
 }
 
@@ -155,14 +165,6 @@ export function removePlayerFromTeamService({
  */
 
 /**
- *  Delete Object Return Interface
- */
-interface DeleteObjectReturnInterface {
-  data: MainDataType;
-  success: boolean;
-}
-
-/**
  * Interface for deleting a team.
  */
 interface DeleteTeamInterface {
@@ -171,11 +173,22 @@ interface DeleteTeamInterface {
 }
 
 /**
+ *  Delete Object Return Interface
+ */
+interface DeleteTeamOrPlayerReturnInterface {
+  data: MainDataType;
+  response: DeleteTeamOrPlayerResponse;
+}
+
+/**
  * Deletes a team from the data object.
  */
 export function deleteTeamService({ data, body }: DeleteTeamInterface) {
   delete data.teams[body.team_id];
-  return { data, success: true };
+  return {
+    data,
+    response: { isDeleted: true },
+  } as DeleteTeamOrPlayerReturnInterface;
 }
 
 /**
@@ -202,5 +215,8 @@ export function deletePlayerService({ data, body }: DeletePlayerInterface) {
     }
   }
 
-  return { data, success: true };
+  return {
+    data,
+    response: { isDeleted: true },
+  } as DeleteTeamOrPlayerReturnInterface;
 }
