@@ -1,15 +1,5 @@
 import { z } from "zod";
-import { MainDataSchema } from "@/types/main-data";
-
-/**
- * PLAYER SCHEMA OBJECT
- */
-export const PlayerSchema = z.object({
-  name: z.string(),
-  photo: z.string(),
-});
-
-export type Player = z.infer<typeof PlayerSchema>;
+import { MainDataSchema, PlayerSchema } from "@/types/main-data";
 
 //-----------------------------------------------------------------------------//
 

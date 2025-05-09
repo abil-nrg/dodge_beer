@@ -1,15 +1,5 @@
 import { z } from "zod";
-import { MainDataSchema } from "@/types/main-data";
-
-/**
- * TEAM SCHEMA OBJECT
- */
-export const TeamSchema = z.object({
-  team_name: z.string(),
-  players: z.array(z.string()),
-});
-
-export type Team = z.infer<typeof TeamSchema>;
+import { MainDataSchema, TeamSchema } from "@/types/main-data";
 
 //-----------------------------------------------------------------------------//
 
@@ -57,8 +47,8 @@ export type ChangePlayerStatusInTeamRequest = z.infer<
 /**
  * CHANGE PLAYER STATUS IN TEAM (Add or Remove) - RESPONSE
  */
-export const ChangePlayerStatusInTeamResponseSchema = z.object({
-  player_key: z.string().min(1),
+export const ChangePlayerStatusInTeamResponseSchema = TeamSchema.pick({
+  players: true,
 });
 export type ChangePlayerStatusInTeamResponse = z.infer<
   typeof ChangePlayerStatusInTeamResponseSchema
