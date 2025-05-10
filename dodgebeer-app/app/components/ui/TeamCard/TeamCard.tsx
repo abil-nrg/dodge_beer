@@ -1,86 +1,161 @@
+//-----------------------------------------------------------------------------//
+/** TEAM CARD COMPONENT */
+//-----------------------------------------------------------------------------//
+
+// styles & icons
 import styles from "./TeamCard.module.css";
+import { MdDelete } from "react-icons/md";
+
+// react
 import { useEffect, useState } from "react";
-import { ApiClient } from "@/app/api/all-routes";
-import { MainDataConfig } from "@/types/main-data";
-import { Player } from "@/types/player";
-import { IoIosRemoveCircleOutline } from "react-icons/io";
 
-interface TeamProps {
-  team_id: string;
-  team_name: string;
-  playerIds: string[];
-}
+// types
+import { MainDataConfig, Player } from "@/types/main-data";
 
+// util & util components
+import { deleteObjectConfirmationBox } from "@/app/util/confirmation-box";
+import type { toast as customToast } from "@/app/util/toast-alert-config";
+
+// services
+import {
+  deleteTeamService,
+  getPlayersMapFromIds,
+  removePlayerFromTeam,
+} from "@/app/services/teamService";
+import PlayerRowInTeamCard from "@/app/components/ui/TeamCard/PlayerRowInTeamCard";
+
+//-----------------------------------------------------------------------------//
+/** Default fallback photo for players with missing image */
+//-----------------------------------------------------------------------------//
 const DEFAULT_PHOTO = MainDataConfig.DEFAULT_PHOTO;
 
-async function removePlayerFromTeam(playerId: string, teamId: string) {
-  await ApiClient.removePlayerFromTeam(playerId, teamId);
+//-----------------------------------------------------------------------------//
+/** Props for the TeamCard component */
+//-----------------------------------------------------------------------------//
+interface TeamProps {
+  /** ID of the team */
+  team_id: string;
+  /** Display name of the team */
+  team_name: string;
+  /** Array of player IDs belonging to this team */
+  playerIds: string[];
+  /** State setter for updating the list of player IDs */
+  setPlayerIds: (ids: string[]) => void;
+  /** Callback to trigger after a team is deleted */
+  onTeamDelete: () => void;
+  /** Optional toast alert object for displaying feedback */
+  toast_alert?: typeof customToast;
 }
 
-export default function TeamCard({ team_id, team_name, playerIds }: TeamProps) {
+//-----------------------------------------------------------------------------//
+/**
+ * Displays a styled card for a team, including team name,
+ * delete button, and all associated players.
+ *
+ * Handles player fetch, deletion confirmation, and local updates.
+ */
+//-----------------------------------------------------------------------------//
+export default function TeamCard({
+  team_id,
+  team_name,
+  playerIds,
+  setPlayerIds,
+  onTeamDelete,
+  toast_alert,
+}: TeamProps) {
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [players, setPlayers] = useState<Record<string, Player>>({});
-  const [isError, setIsError] = useState(false);
 
+  //-----------------------------------------------------------------------------//
+  /** Fetch all players on mount and when playerIds change */
+  //-----------------------------------------------------------------------------//
   useEffect(() => {
-    async function fetchPlayerData() {
-      const newPlayers: Record<string, Player> = {};
+    let isMounted = true;
 
-      await Promise.all(
-        playerIds.map(async (player_id) => {
-          try {
-            const response = await ApiClient.GetPLayerById(player_id);
-
-            if (!response.ok) throw new Error("Bad response");
-
-            newPlayers[player_id] = (await response.json()) as Player;
-          } catch (err) {
-            setIsError(true);
-            newPlayers[player_id] = {
-              name: player_id,
-              photo: DEFAULT_PHOTO,
-            };
-          }
-        }),
-      );
-
-      setPlayers(newPlayers);
+    async function fetchAndSetPlayers() {
+      const newPlayers = await getPlayersMapFromIds(playerIds);
+      if (isMounted) {
+        setPlayers(newPlayers);
+      }
     }
 
-    fetchPlayerData();
+    fetchAndSetPlayers();
+
+    return () => {
+      isMounted = false;
+    };
   }, [playerIds]);
 
+  //-----------------------------------------------------------------------------//
+  /** Toggles selection (highlight) state of this card */
+  //-----------------------------------------------------------------------------//
+  function toggleCardSelection() {
+    setIsSelected((prev) => !prev);
+  }
+
+  //-----------------------------------------------------------------------------//
+  /** Deletes a player from the team after confirmation */
+  //-----------------------------------------------------------------------------//
+  async function removePlayerFromTeamHandler(player_id: string) {
+    const deleteConfirmation = await deleteObjectConfirmationBox();
+    if (deleteConfirmation) {
+      const result = await removePlayerFromTeam(player_id, team_id);
+      if (Array.isArray(result)) {
+        setPlayerIds(result);
+        toast_alert?.success("Player removed from team.");
+      } else if (typeof result === "string") {
+        toast_alert?.error(result);
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------------//
+  /** Deletes the entire team after confirmation */
+  //-----------------------------------------------------------------------------//
+  async function deleteTeamHandler() {
+    const deleteConfirmation = await deleteObjectConfirmationBox();
+    if (deleteConfirmation) {
+      const result = await deleteTeamService(team_id);
+      if (typeof result === "boolean") {
+        onTeamDelete();
+        toast_alert?.success("Team deleted.");
+      } else {
+        toast_alert?.error(result);
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------------//
+  /** Render JSX */
+  //-----------------------------------------------------------------------------//
   return (
     <div
       className={`${styles.teamCard} ${isSelected ? styles.activeCard : ""}`}
-      onClick={() => {
-        setIsSelected((prev) => !prev);
-      }}
+      onClick={toggleCardSelection}
     >
-      <div className={styles.teamName}>{team_name}</div>
+      <div className={styles.teamName}>
+        {team_name}
+        <button
+          className={styles.deleteTeam}
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteTeamHandler();
+          }}
+        >
+          <MdDelete />
+        </button>
+      </div>
       <div className={styles.playersList}>
         {playerIds.map((player_id) => {
           const player = players[player_id];
           return (
-            <div className={styles.playerRow} key={player_id}>
-              <img
-                src={player?.photo || DEFAULT_PHOTO}
-                alt={player?.name || player_id}
-                className={styles.playerImage}
-              />
-              <span className={styles.playerName}>
-                {player?.name || player_id}
-              </span>
-              <button
-                className={styles.playerActionInTeam}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  removePlayerFromTeam(player_id, team_id);
-                }}
-              >
-                <IoIosRemoveCircleOutline />
-              </button>
-            </div>
+            <PlayerRowInTeamCard
+              key={player_id}
+              player={player}
+              playerId={player_id}
+              onPlayerDelete={() => removePlayerFromTeamHandler(player_id)}
+              defaultOptions={{ name: player_id, photo: DEFAULT_PHOTO }}
+            />
           );
         })}
       </div>

@@ -1,7 +1,7 @@
 .teamCard {
     border-radius: 18px;
     background: var(--element-clr);
-    box-shadow: 0 4px 16px rgba(34, 64, 132, 0.07);
+    box-shadow: 0 4px 16px rgba(0, 82, 255, 0.07);
     padding: 2rem 1.2rem 1.5rem 1.2rem;
     width: 100%;
     max-width: 350px;
@@ -25,11 +25,12 @@
 
 /* title on top */
 .teamName {
+    position: relative;
     font-size: 1.8rem;
     font-weight: 700;
     color: #233876;
     text-align: center;
-    margin-bottom: 1.3rem;
+    margin-bottom: 1.5rem;
 }
 
 /* players */
@@ -54,8 +55,8 @@
 }
 
 .playerImage {
-    width: 65px;
-    height: 65px;
+    width: 5rem;
+    height: 5rem;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #aac7ff;
@@ -63,7 +64,7 @@
 }
 
 .playerName {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     font-weight: 500;
     color: #1c305a;
     word-break: break-word;
@@ -77,7 +78,8 @@
     background: none;
     cursor: pointer;
     margin-left:auto;
-    padding-right: 1em
+    padding-right: 1em;
+    font-size: 1.5em;
 }
 
 /* Show button on row hover */
@@ -88,6 +90,31 @@
 /* OR show when card is selected */
 .activeCard .playerActionInTeam {
     display: inline;
+}
+
+/* delete team button */
+.deleteTeam{
+    visibility: hidden;
+    position: absolute;
+    border:none;
+    color: red;
+    background: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+
+    right: -7.5rem; /* Move a bit to the right */
+    top: 50%;
+    transform: translateY(-50%); /* Vertically center */
+}
+
+/* Show button on row hover */
+.teamCard:hover .deleteTeam {
+    visibility: visible;
+}
+
+/* OR show when card is selected */
+.activeCard .deleteTeam {
+    visibility: visible;
 }
 
 /* Responsiveness */

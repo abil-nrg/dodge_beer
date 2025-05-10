@@ -1,22 +1,41 @@
+// app/teams/page.tsx
 "use client";
-import React, { useState, useEffect } from "react";
-import TeamCard from "@/app/components/ui/TeamCard/TeamCard";
-import { ApiClient } from "@/app/api/all-routes";
 
+// react
+import React, { useState, useEffect } from "react";
+// loading skeleton
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+// toastify alerts
+import { ToastContainerCustom, toast } from "@/app/util/toast-alert-config";
+// styles
 import styles from "@/app/teams/page.module.css";
+// utils
+import { ApiClient } from "@/app/api/all-routes";
+// components
+import TeamCardContainer from "@/app/components/ui/TeamCard/TeamCardContainer";
+// types
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
 import { GetAllTeamsResponse } from "@/types/team";
 
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+//-----------------------------------------------------------------------------//
+/** TEAMS PAGE COMPONENT */
+//-----------------------------------------------------------------------------//
 
+/**
+ * Displays all team cards with loading and error handling.
+ * Fetches team data on mount and allows individual team deletion.
+ */
 export default function TeamsPage() {
-  const [data, setData] = useState<GetAllTeamsResponse | null>(null);
+  const [teams, setTeams] = useState<GetAllTeamsResponse["teams"]>({});
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  //-----------------------------------------------------------------------------//
+  /** Fetch team data from API on mount */
+  //-----------------------------------------------------------------------------//
   useEffect(() => {
     async function fetchTeams() {
-      // try to get response and set data
       try {
         const response = await ApiClient.GetAllTeams();
         const result = (await response.json()) as ApiResponse<
@@ -32,13 +51,11 @@ export default function TeamsPage() {
           return;
         }
 
-        setData(result.data as GetAllTeamsResponse);
+        setTeams((result.data as GetAllTeamsResponse).teams);
       } catch (err) {
-        // failed at some point
-        console.error("Fetch error:", err);
+        console.error("Fetch error in TeamsPage:", err);
         setIsError(true);
       } finally {
-        // loading stop
         setIsLoading(false);
       }
     }
@@ -46,6 +63,19 @@ export default function TeamsPage() {
     fetchTeams();
   }, []);
 
+  //-----------------------------------------------------------------------------//
+  /** Remove a team from local state when it's deleted */
+  //-----------------------------------------------------------------------------//
+  function handleTeamDeleted(teamId: string) {
+    setTeams((prev) => {
+      const updated = { ...prev };
+      delete updated[teamId];
+      return updated;
+    });
+  }
+
+  //-----------------------------------------------------------------------------//
+  /** Render loading skeleton */
   //-----------------------------------------------------------------------------//
   if (isLoading) {
     return (
@@ -63,29 +93,40 @@ export default function TeamsPage() {
     );
   }
 
-  if (isError || !data) {
+  //-----------------------------------------------------------------------------//
+  /** Render error state */
+  //-----------------------------------------------------------------------------//
+  if (isError || !teams) {
     return (
       <div className={styles["teams-container"]}>Failed to load teams.</div>
     );
   }
 
-  const teamEntries = Object.entries(data.teams);
+  //-----------------------------------------------------------------------------//
+  /** Render team cards */
+  //-----------------------------------------------------------------------------//
+  const teamEntries = Object.entries(teams);
   const hasTeams = teamEntries.length > 0;
 
   return (
-    <div className={styles["teams-container"]}>
-      {hasTeams ? (
-        teamEntries.map(([teamId, team]) => (
-          <TeamCard
-            key={teamId}
-            team_id={teamId}
-            team_name={team.team_name}
-            playerIds={team.players}
-          />
-        ))
-      ) : (
-        <div>Nothing here</div>
-      )}
-    </div>
+    <>
+      <div className={styles["teams-container"]}>
+        {hasTeams ? (
+          teamEntries.map(([teamId, team]) => (
+            <TeamCardContainer
+              key={teamId}
+              team_id={teamId}
+              team_name={team.team_name}
+              initialPlayerIds={team.players}
+              onDelete={() => handleTeamDeleted(teamId)}
+              toast_alert={toast}
+            />
+          ))
+        ) : (
+          <div>Nothing here</div>
+        )}
+      </div>
+      <ToastContainerCustom />
+    </>
   );
 }
