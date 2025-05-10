@@ -15,6 +15,8 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-loading-skeleton": "^3.5.0",
+    "react-toastify": "^11.0.5",
+    "sweetalert2": "^11.21.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {
