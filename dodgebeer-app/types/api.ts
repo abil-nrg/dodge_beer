@@ -13,7 +13,7 @@ export type ApiResponse<T> = {
 };
 
 export function ApiSuccess<T>(data: T): NextResponse<ApiResponse<T>> {
-  return NextResponse.json({ success: true, data });
+  return NextResponse.json({ success: true, data } as ApiResponse<T>);
 }
 
 export type ResponseWithErrorInData = {
@@ -28,7 +28,10 @@ export function ApiError({
   message: string;
 }): NextResponse<ApiResponse<ResponseWithErrorInData>> {
   return NextResponse.json(
-    { success: false, data: { error: message } },
+    {
+      success: false,
+      data: { error: message },
+    } as ApiResponse<ResponseWithErrorInData>,
     { status },
   );
 }
