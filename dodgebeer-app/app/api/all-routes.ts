@@ -1,4 +1,7 @@
-import { ChangePlayerStatusInTeamRequest } from "@/types/team";
+import {
+  ChangePlayerStatusInTeamRequest,
+  DeleteTeamRequest,
+} from "@/types/team";
 
 const API = "/api";
 const MAIN_DATA_API = API + "/main-data";
@@ -71,6 +74,18 @@ export class ApiClient {
         player_id: playerId,
         team_id: teamId,
       } as ChangePlayerStatusInTeamRequest),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  static deleteTeam(team_id: string) {
+    return fetch(API_ROUTE.DELETE_TEAM, {
+      method: "POST",
+      body: JSON.stringify({
+        team_id: team_id,
+      } as DeleteTeamRequest),
       headers: {
         "Content-Type": "application/json",
       },
