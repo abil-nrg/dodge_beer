@@ -12,6 +12,7 @@ import {
   CreatePlayerRequest,
   CreatePlayerResponse,
   DeletePlayerRequest,
+  PlayerWithId,
 } from "@/types/player";
 import {
   ChangePlayerStatusInTeamRequest,
@@ -223,4 +224,38 @@ export function deletePlayerService({ data, body }: DeletePlayerInterface) {
     data,
     response: { isDeleted: true },
   } as DeleteTeamOrPlayerReturnInterface;
+}
+
+/**
+ *
+ */
+export function getAvailablePlayersService(data: MainDataType) {
+  const result: Array<PlayerWithId> = [];
+  const PLAYER_AVAILABLE = 0;
+  const PLAYER_UNAVAILABLE = 1;
+  const players = data.players;
+  const teams = data.teams;
+
+  // get every player to map
+  const playersAvailabilityMap = new Map<string, number>();
+  Object.entries(players).forEach((player) => {
+    playersAvailabilityMap.set(player[0], PLAYER_AVAILABLE);
+  });
+
+  //find all players in team
+  Object.entries(teams).forEach((team) => {
+    const teamPlayers = team[1].players;
+    for (const teamPlayer of teamPlayers) {
+      playersAvailabilityMap.set(teamPlayer, PLAYER_UNAVAILABLE);
+    }
+  });
+
+  // players that are in team are marked, so expand it
+  playersAvailabilityMap.forEach((availability, player_id) => {
+    if (availability === PLAYER_AVAILABLE) {
+      result.push({ player_id: player_id, player: players[player_id] });
+    }
+  });
+
+  return result;
 }

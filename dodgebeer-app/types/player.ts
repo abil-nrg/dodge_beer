@@ -1,6 +1,16 @@
 import { z } from "zod";
 import { MainDataSchema, PlayerSchema } from "@/types/main-data";
 
+/**
+ * PLAYER OBJECT WITH ID AND OTHER PROPERTIES
+ */
+export const PlayerWithIdSchema = z.object({
+  player_id: z.string(),
+  player: PlayerSchema,
+});
+
+export type PlayerWithId = z.infer<typeof PlayerWithIdSchema>;
+
 //-----------------------------------------------------------------------------//
 
 /**
@@ -66,3 +76,8 @@ export const DeletePlayerRequestSchema = z.object({
   player_id: z.string().min(1),
 });
 export type DeletePlayerRequest = z.infer<typeof DeletePlayerRequestSchema>;
+
+/**
+ * GET AVAILABLE PEOPLE (NOT IN TEAM)
+ */
+export type GetPlayerNotInTeamResponse = PlayerWithId[];

@@ -8,6 +8,7 @@ import {
   overwriteFile,
   readMainDataFile,
 } from "@backend/services/readFile";
+import { getAvailablePlayersService } from "@backend/services/createPlayerAndTeamObject";
 // types
 import { MainDataConfig, MainDataType } from "@/types/main-data";
 import {
@@ -23,6 +24,7 @@ import {
   GetAllPlayersResponseSchema,
   GetPlayerByIdRequest,
   GetPlayerByIdResponse,
+  GetPlayerNotInTeamResponse,
 } from "@/types/player";
 import { ERROR_MESSAGE } from "@/types/message";
 
@@ -97,20 +99,54 @@ export async function getAllPlayersHandler(): Promise<
   return ApiSuccess<GetAllPlayersResponse>(response);
 }
 
+//-----------------------------------------------------------------------------//
+/** HANDLER: Get player by ID */
+//-----------------------------------------------------------------------------//
+
+/**
+ * Retrieves a specific player by ID from the main data file.
+ *
+ * @param player_id - ID of the player to look up
+ * @returns NextResponse containing the player data or a 404 error if not found
+ */
 export async function getPlayerByIdHandler({
   player_id,
 }: GetPlayerByIdRequest): Promise<
   NextResponse<ApiResponse<GetPlayerByIdResponse | ResponseWithErrorInData>>
 > {
   const full_data = readMainDataFile();
+
+  // Validate and extract all players from the main data file
   const players = GetAllPlayersResponseSchema.parse(full_data).players;
 
   const playerRequested = players[player_id];
+
+  // If player doesn't exist, return a NOT_FOUND error
   if (!playerRequested) {
     return ApiError({
       status: HTTP_CODE.NOT_FOUND,
       message: ERROR_MESSAGE.PLAYER_DOESNT_EXIST(player_id),
     });
   }
+
+  // If found, return the player object as a successful API response
   return ApiSuccess<GetPlayerByIdResponse>(playerRequested);
+}
+
+//-----------------------------------------------------------------------------//
+/** HANDLER: Get all players not in any team */
+//-----------------------------------------------------------------------------//
+
+/**
+ * Retrieves all players that are not assigned to any team.
+ *
+ * @returns NextResponse containing an array of available players
+ */
+export async function getAllAvailablePlayersHandler() {
+  const full_data = readMainDataFile();
+
+  // Filter out players currently assigned to any team
+  const players = getAvailablePlayersService(full_data);
+
+  return ApiSuccess<GetPlayerNotInTeamResponse>(players);
 }
