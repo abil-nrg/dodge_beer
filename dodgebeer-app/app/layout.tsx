@@ -1,5 +1,5 @@
 // COMPONENTS
-import Sidebar from "./components/ui/Sidebar/Sidebar";
+import Sidebar from "@/app/components/Sidebar/Sidebar";
 // CSS
 import "./globals.css";
 // METADATA

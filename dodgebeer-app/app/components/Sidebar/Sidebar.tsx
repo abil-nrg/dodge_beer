@@ -11,7 +11,7 @@ import { RiTeamLine } from "react-icons/ri";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { IoBeerOutline } from "react-icons/io5";
 // css
-import styles from "@/app/components/ui/Sidebar/Sidebar.module.css";
+import styles from "@/app/components/Sidebar/Sidebar.module.css";
 
 export default function Sidebar() {
   const [isClosed, setIsClosed] = useState<boolean>(false);
