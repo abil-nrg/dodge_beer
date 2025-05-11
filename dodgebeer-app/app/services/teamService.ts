@@ -1,71 +1,11 @@
 import { ApiClient } from "@/app/api/all-routes";
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
-import { GetPlayerByIdResponse } from "@/types/player";
-import { MainDataConfig, Player } from "@/types/main-data";
 import {
   ChangePlayerStatusInTeamResponse,
   ChangePlayerStatusInTeamResponseSchema,
   DeleteTeamOrPlayerResponse,
 } from "@/types/team";
 import { normalizeApiResponse } from "@/app/util/readAndNormalizeApiResponseType";
-
-//-----------------------------------------------------------------------------//
-/** Fetch all player data for given IDs. Returns a map of ID → Player.
- *  Falls back to placeholder player if individual requests fail.
- *
- *  @param ids - List of player IDs
- *  @returns Record of playerId to Player object
- */
-//-----------------------------------------------------------------------------//
-export async function getPlayersMapFromIds(
-  ids: string[],
-): Promise<Record<string, Player>> {
-  const players: Record<string, Player> = {};
-
-  await Promise.all(
-    ids.map(async (id) => {
-      try {
-        players[id] = await fetchPlayerInfoById(id);
-      } catch {
-        players[id] = {
-          name: id,
-          photo: MainDataConfig.DEFAULT_PHOTO,
-        };
-      }
-    }),
-  );
-
-  return players;
-}
-
-//-----------------------------------------------------------------------------//
-/** Fetch individual player data by ID with schema validation.
- *
- *  @param player_id - Unique player identifier
- *  @returns Validated Player object
- *  @throws If fetch or schema validation fails
- */
-//-----------------------------------------------------------------------------//
-export async function fetchPlayerInfoById(player_id: string) {
-  const response = await ApiClient.GetPLayerById(player_id);
-  const result = (await response.json()) as ApiResponse<
-    GetPlayerByIdResponse | ResponseWithErrorInData
-  >;
-
-  const normalized = normalizeApiResponse<
-    GetPlayerByIdResponse,
-    ResponseWithErrorInData
-  >(result);
-
-  if (response.status !== 200 || !normalized.ok || !normalized.data) {
-    console.error(`Caught error in fetchPlayerInfoById\n
-                   Player with Id ${player_id}.\n
-                   Error: ${normalized.errMsg ?? "Unknown error"}`);
-    throw new Error();
-  }
-
-  return normalized.data;
-}
 
 //-----------------------------------------------------------------------------//
 /** Remove a player from a team and return updated player list or error string.
@@ -95,6 +35,17 @@ export async function removePlayerFromTeam(
   if ("error" in result.data) {
     return result.data.error;
   }
+}
+
+/**
+ * Sends a request to add a player to a team.
+ *
+ * @param teamId - ID of the team to add the player to
+ * @param playerId - ID of the player to add
+ * @returns The parsed API response or an error message
+ */
+export function addNewPlayerToTeam(teamId: string, playerId: string) {
+  ApiClient.addNewPlayerToTeam(teamId, playerId);
 }
 
 //-----------------------------------------------------------------------------//

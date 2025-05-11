@@ -19,7 +19,8 @@ const API_ROUTE = {
   GET_PLAYER_BY_ID: `${MAIN_DATA_API}${PLAYERS}/get-player`,
   CREATE_PLAYER: `${MAIN_DATA_API}${PLAYERS}/create-player`,
   DELETE_PLAYER: `${MAIN_DATA_API}${PLAYERS}/delete-player`,
-  GET_PLAYER_IMAGE: `${MAIN_DATA_API}${PLAYERS}/get-player-image`,
+  GET_PLAYER_NOT_IN_TEAM: `${MAIN_DATA_API}${PLAYERS}/getPlayersNotInTeam`,
+
   // TEAM ROUTES
   GET_ALL_TEAMS: `${MAIN_DATA_API}${TEAMS}`,
   CREATE_TEAM: `${MAIN_DATA_API}${TEAMS}/create-team`,
@@ -32,6 +33,10 @@ interface AddQueryParamToUrnProps {
   base: string;
   params: Record<string, string>;
 }
+
+const JSON_HEADER = {
+  "Content-Type": "application/json",
+};
 
 export class ApiClient {
   static #AddQueryParamToUrn({
@@ -74,9 +79,7 @@ export class ApiClient {
         player_id: playerId,
         team_id: teamId,
       } as ChangePlayerStatusInTeamRequest),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: JSON_HEADER,
     });
   }
 
@@ -86,9 +89,23 @@ export class ApiClient {
       body: JSON.stringify({
         team_id: team_id,
       } as DeleteTeamRequest),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: JSON_HEADER,
+    });
+  }
+  static getPlayersNotInTeam() {
+    return fetch(API_ROUTE.GET_PLAYER_NOT_IN_TEAM, {
+      method: "GET",
+    });
+  }
+
+  static addNewPlayerToTeam(teamId: string, playerId: string) {
+    return fetch(API_ROUTE.ADD_PLAYER_TO_TEAM, {
+      method: "POST",
+      headers: JSON_HEADER,
+      body: JSON.stringify({
+        player_id: playerId,
+        team_id: teamId,
+      } as ChangePlayerStatusInTeamRequest),
     });
   }
 }
