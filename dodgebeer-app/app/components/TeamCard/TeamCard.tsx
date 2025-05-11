@@ -18,11 +18,14 @@ import type { toast as customToast } from "@/app/util/toast-alert-config";
 
 // services
 import {
+  addNewPlayerToTeam,
   deleteTeamService,
-  getPlayersMapFromIds,
   removePlayerFromTeam,
 } from "@/app/services/teamService";
-import PlayerRowInTeamCard from "@/app/components/ui/TeamCard/PlayerRowInTeamCard";
+import PlayerRowInTeamCard from "@/app/components/TeamCard/TeamCardElements/PlayerRowInTeamCard/PlayerRowInTeamCard";
+import AddPlayerToTeamCardButton from "@/app/components/TeamCard/TeamCardElements/AddPlayerToTeamCardButton/AddPlayerToTeamCardButton";
+import AddPlayerToTeamCardModal from "@/app/components/TeamCard/TeamCardElements/AddPlayerToTeamCardModal/AddPlayerToTeamCardModal";
+import { getPlayersMapFromIds } from "@/app/services/playerService";
 
 //-----------------------------------------------------------------------------//
 /** Default fallback photo for players with missing image */
@@ -65,7 +68,7 @@ export default function TeamCard({
 }: TeamProps) {
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [players, setPlayers] = useState<Record<string, Player>>({});
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   //-----------------------------------------------------------------------------//
   /** Fetch all players on mount and when playerIds change */
   //-----------------------------------------------------------------------------//
@@ -85,6 +88,15 @@ export default function TeamCard({
       isMounted = false;
     };
   }, [playerIds]);
+
+  //-----------------------------------------------------------------------------//
+  /** Opens a modal for adding new player */
+  //-----------------------------------------------------------------------------//
+  function handlePlayerAddedClick(player_id: string) {
+    addNewPlayerToTeam(team_id, player_id);
+    setPlayerIds([...playerIds, player_id]);
+    setIsModalOpen(false);
+  }
 
   //-----------------------------------------------------------------------------//
   /** Toggles selection (highlight) state of this card */
@@ -159,6 +171,17 @@ export default function TeamCard({
           );
         })}
       </div>
+      <div className={styles.addPlayerElem}>
+        <AddPlayerToTeamCardButton onOpenModal={() => setIsModalOpen(true)} />
+      </div>
+      {/*Opens a modal for adding new player*/}
+      {isModalOpen && (
+        <AddPlayerToTeamCardModal
+          onSuccess={handlePlayerAddedClick}
+          onClose={() => setIsModalOpen(false)}
+          toast_alert={toast_alert}
+        />
+      )}
     </div>
   );
 }

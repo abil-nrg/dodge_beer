@@ -117,6 +117,24 @@
     visibility: visible;
 }
 
+/* Add player to team button */
+.addPlayerElem{
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+    width: 80%;
+    visibility: hidden;
+}
+
+.teamCard:hover .addPlayerElem{
+    visibility: visible;
+}
+
+.activeCard .addPlayerElem{
+    visibility: visible;
+}
+
+
 /* Responsiveness */
 @media (max-width: 600px) {
     .teamCard {
