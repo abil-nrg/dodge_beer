@@ -1,16 +1,46 @@
 .teams-container{
+    position:relative;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-evenly;
     gap: 50px;
 
-    height: 100vh;
-    padding: 2em 0;
+    height: auto;
+    padding: 2.5em 0;
+
 }
 
 .skeleton-card {
     flex: 1 1 300px;
     min-width: 280px;
     max-width: 400px;
+}
+
+.add-team-button {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #4caf50;
+    color: white;
+    font-size: 2rem;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    z-index: 1000;
+
+    /* center the icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+
+.add-team-button:hover {
+    background-color: #388e3c;
 }

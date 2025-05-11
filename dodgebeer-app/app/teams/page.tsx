@@ -9,11 +9,12 @@ import "react-loading-skeleton/dist/skeleton.css";
 // toastify alerts
 import { ToastContainerCustom, toast } from "@/app/util/toast-alert-config";
 // styles
+import { IoMdAdd } from "react-icons/io";
 import styles from "@/app/teams/page.module.css";
 // utils
 import { ApiClient } from "@/app/api/all-routes";
 // components
-import TeamCardContainer from "@/app/components/ui/TeamCard/TeamCardContainer";
+import TeamCardContainer from "@/app/components/TeamCard/TeamCardContainer";
 // types
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
 import { GetAllTeamsResponse } from "@/types/team";
@@ -30,6 +31,7 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState<GetAllTeamsResponse["teams"]>({});
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   //-----------------------------------------------------------------------------//
   /** Fetch team data from API on mount */
@@ -125,6 +127,14 @@ export default function TeamsPage() {
         ) : (
           <div>Nothing here</div>
         )}
+        <button
+          className={styles["add-team-button"]}
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          <IoMdAdd />
+        </button>
       </div>
       <ToastContainerCustom />
     </>
