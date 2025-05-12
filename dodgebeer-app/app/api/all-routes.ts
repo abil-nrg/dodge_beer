@@ -1,5 +1,6 @@
 import {
   ChangePlayerStatusInTeamRequest,
+  CreateTeamRequest,
   DeleteTeamRequest,
 } from "@/types/team";
 
@@ -106,6 +107,16 @@ export class ApiClient {
         player_id: playerId,
         team_id: teamId,
       } as ChangePlayerStatusInTeamRequest),
+    });
+  }
+
+  static createTeam(teamName: string) {
+    return fetch(API_ROUTE.CREATE_TEAM, {
+      method: "POST",
+      headers: JSON_HEADER,
+      body: JSON.stringify({
+        team_name: teamName,
+      } as CreateTeamRequest),
     });
   }
 }

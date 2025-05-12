@@ -1,8 +1,11 @@
+// util
 import { ApiClient } from "@/app/api/all-routes";
+// types
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
 import {
   ChangePlayerStatusInTeamResponse,
   ChangePlayerStatusInTeamResponseSchema,
+  CreateTeamResponse,
   DeleteTeamOrPlayerResponse,
 } from "@/types/team";
 import { normalizeApiResponse } from "@/app/util/readAndNormalizeApiResponseType";
@@ -77,4 +80,14 @@ export async function deleteTeamService(
   } catch {
     return "Unexpected error while deleting team.";
   }
+}
+
+/**
+ * Calls backend to create new team
+ * @param teamName - Team name
+ */
+export async function createTeam(teamName: string) {
+  const response = await ApiClient.createTeam(teamName);
+  const result = (await response.json()) as CreateTeamResponse;
+  return result.team_key;
 }

@@ -1,6 +1,8 @@
 //  app/services/playerService.ts
-//-----------------------------------------------------------------------------//
+
+// util
 import { ApiClient } from "@/app/api/all-routes";
+//types
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
 import {
   GetPlayerByIdResponse,
