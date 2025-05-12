@@ -114,7 +114,7 @@ export default function TeamCard({
       const result = await removePlayerFromTeam(player_id, team_id);
       if (Array.isArray(result)) {
         setPlayerIds(result);
-        toast_alert?.success("Player removed from team.");
+        toast_alert?.success("They probably sucked anyway");
       } else if (typeof result === "string") {
         toast_alert?.error(result);
       }
