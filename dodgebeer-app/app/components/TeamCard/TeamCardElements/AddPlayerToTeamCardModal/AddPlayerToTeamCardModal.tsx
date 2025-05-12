@@ -2,8 +2,10 @@ import styles from "./AddPlayerToTeamCardModal.module.css";
 import { useEffect, useState } from "react";
 import ModalButton from "@/app/components/ui/ModalButton/ModalButton";
 import { fetchAllAvailablePlayers } from "@/app/services/playerService";
-import { PlayerWithId } from "@types/player";
+import { PlayerWithId } from "@/types/player";
 import type { toast as customToast } from "@/app/util/toast-alert-config";
+import BaseModal from "@/app/components/BaseModal/BaseModal";
+import ModalSelect from "@/app/components/ui/ModalSelect/ModalSelect";
 
 interface Props {
   onSuccess: (playerId: string) => void;
@@ -43,33 +45,27 @@ export default function AddPlayerToTeamCardModal({
   }
 
   return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <h3 className={styles.modalTitle}>Select a player to add</h3>
+    <BaseModal title="Select a player to add" onClose={onClose}>
+      <ModalSelect
+        value={selectedPlayerId}
+        onChange={setSelectedPlayerId}
+        options={players.map((p) => ({
+          value: p.player_id,
+          label: p.player.name,
+        }))}
+        placeholder="Select Player"
+        required
+      />
 
-        <select
-          className={styles.customSelect}
-          value={selectedPlayerId}
-          onChange={(e) => setSelectedPlayerId(e.target.value)}
-        >
-          <option value="">Select Player</option>
-          {players.map((p, id) => (
-            <option key={id} value={p.player_id}>
-              {p.player.name}
-            </option>
-          ))}
-        </select>
-
-        <div className={styles.buttonRow}>
-          <ModalButton
-            text="Submit"
-            onClick={handleSubmit}
-            color="green"
-            disabled={!selectedPlayerId}
-          />
-          <ModalButton text="Cancel" onClick={onClose} color="red" />
-        </div>
+      <div className={styles.buttonRow}>
+        <ModalButton
+          text="Submit"
+          onClick={handleSubmit}
+          color="green"
+          disabled={!selectedPlayerId}
+        />
+        <ModalButton text="Cancel" onClick={onClose} color="red" />
       </div>
-    </div>
+    </BaseModal>
   );
 }

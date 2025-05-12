@@ -12,9 +12,11 @@ import { ToastContainerCustom, toast } from "@/app/util/toast-alert-config";
 import { IoMdAdd } from "react-icons/io";
 import styles from "@/app/teams/page.module.css";
 // utils
+import { createTeam } from "@/app/services/teamService";
 import { ApiClient } from "@/app/api/all-routes";
 // components
 import TeamCardContainer from "@/app/components/TeamCard/TeamCardContainer";
+import AddNewTeamModal from "@/app/components/TeamPageComponents/AddNewTeamModal/AddNewTeamModal";
 // types
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
 import { GetAllTeamsResponse } from "@/types/team";
@@ -28,6 +30,7 @@ import { GetAllTeamsResponse } from "@/types/team";
  * Fetches team data on mount and allows individual team deletion.
  */
 export default function TeamsPage() {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [teams, setTeams] = useState<GetAllTeamsResponse["teams"]>({});
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +55,6 @@ export default function TeamsPage() {
           setIsError(true);
           return;
         }
-
         setTeams((result.data as GetAllTeamsResponse).teams);
       } catch (err) {
         console.error("Fetch error in TeamsPage:", err);
@@ -63,17 +65,32 @@ export default function TeamsPage() {
     }
 
     fetchTeams();
-  }, []);
+  }, [refreshTrigger]);
+
+  //-----------------------------------------------------------------------------//
+  /** Triggers team refresh */
+  //-----------------------------------------------------------------------------//
+  function triggerTeamRefresh() {
+    setRefreshTrigger((prev) => prev + 1);
+  }
 
   //-----------------------------------------------------------------------------//
   /** Remove a team from local state when it's deleted */
   //-----------------------------------------------------------------------------//
-  function handleTeamDeleted(teamId: string) {
+  async function handleTeamDeleted(teamId: string) {
     setTeams((prev) => {
       const updated = { ...prev };
       delete updated[teamId];
       return updated;
     });
+  }
+
+  //-----------------------------------------------------------------------------//
+  /** Add a new Team */
+  //-----------------------------------------------------------------------------//
+  async function handleNewTeamAddClick(teamName: string) {
+    await createTeam(teamName);
+    triggerTeamRefresh();
   }
 
   //-----------------------------------------------------------------------------//
@@ -135,6 +152,14 @@ export default function TeamsPage() {
         >
           <IoMdAdd />
         </button>
+        {/*Opens a modal for adding new team*/}
+        {isModalOpen && (
+          <AddNewTeamModal
+            onSuccess={handleNewTeamAddClick}
+            onClose={() => setIsModalOpen(false)}
+            toast_alert={toast}
+          />
+        )}
       </div>
       <ToastContainerCustom />
     </>
