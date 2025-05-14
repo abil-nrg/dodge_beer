@@ -12,8 +12,13 @@ export type ApiResponse<T> = {
   data: T;
 };
 
-export function ApiSuccess<T>(data: T): NextResponse<ApiResponse<T>> {
-  return NextResponse.json({ success: true, data } as ApiResponse<T>);
+export function ApiSuccess<T>(
+  data: T,
+  statusCode?: number,
+): NextResponse<ApiResponse<T>> {
+  return NextResponse.json({ success: true, data } as ApiResponse<T>, {
+    status: statusCode || HTTP_CODE.OK,
+  });
 }
 
 export type ResponseWithErrorInData = {

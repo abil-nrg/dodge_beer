@@ -4,11 +4,13 @@ import {
   DeleteTeamRequest,
 } from "@/types/team";
 import { CreatePlayerRequest, DeletePlayerRequest } from "@/types/player";
+import { CreateGameRequest } from "@/types/game-api";
 
 const API = "/api";
 const MAIN_DATA_API = API + "/main-data";
 const PLAYERS = "/players";
 const TEAMS = "/teams";
+const GAME = "/game";
 
 const API_ROUTE = {
   API,
@@ -30,6 +32,9 @@ const API_ROUTE = {
   DELETE_TEAM: `${MAIN_DATA_API}${TEAMS}/delete-team`,
   ADD_PLAYER_TO_TEAM: `${MAIN_DATA_API}${TEAMS}/add-player-to-team`,
   REMOVE_PLAYER_FROM_TEAM: `${MAIN_DATA_API}${TEAMS}/remove-player-from-team`,
+
+  //GAME ROUTES
+  CREATE_GAME: `${MAIN_DATA_API}${GAME}/create-game`,
 };
 
 interface AddQueryParamToUrnProps {
@@ -58,11 +63,11 @@ export class ApiClient {
     return url.toString();
   }
 
-  static GetAllTeams() {
+  static GetAllTeamsRoute() {
     return fetch(API_ROUTE.GET_ALL_TEAMS, { method: "GET" });
   }
 
-  static GetPLayerById(id: string) {
+  static GetPLayerByIdRoute(id: string) {
     const urn = this.#AddQueryParamToUrn({
       base: API_ROUTE.GET_PLAYER_BY_ID,
       params: {
@@ -75,7 +80,7 @@ export class ApiClient {
     });
   }
 
-  static removePlayerFromTeam(playerId: string, teamId: string) {
+  static removePlayerFromTeamRoute(playerId: string, teamId: string) {
     return fetch(API_ROUTE.REMOVE_PLAYER_FROM_TEAM, {
       method: "POST",
       body: JSON.stringify({
@@ -86,7 +91,7 @@ export class ApiClient {
     });
   }
 
-  static deleteTeam(team_id: string) {
+  static deleteTeamRoute(team_id: string) {
     return fetch(API_ROUTE.DELETE_TEAM, {
       method: "POST",
       body: JSON.stringify({
@@ -95,13 +100,13 @@ export class ApiClient {
       headers: JSON_HEADER,
     });
   }
-  static getPlayersNotInTeam() {
+  static getPlayersNotInTeamRoute() {
     return fetch(API_ROUTE.GET_PLAYER_NOT_IN_TEAM, {
       method: "GET",
     });
   }
 
-  static addNewPlayerToTeam(teamId: string, playerId: string) {
+  static addNewPlayerToTeamRoute(teamId: string, playerId: string) {
     return fetch(API_ROUTE.ADD_PLAYER_TO_TEAM, {
       method: "POST",
       headers: JSON_HEADER,
@@ -112,7 +117,7 @@ export class ApiClient {
     });
   }
 
-  static createTeam(teamName: string) {
+  static createTeamRoute(teamName: string) {
     return fetch(API_ROUTE.CREATE_TEAM, {
       method: "POST",
       headers: JSON_HEADER,
@@ -122,13 +127,13 @@ export class ApiClient {
     });
   }
 
-  static getAllPlayers() {
+  static getAllPlayersRoute() {
     return fetch(API_ROUTE.GET_ALL_PLAYERS, {
       method: "GET",
     });
   }
 
-  static deletePlayer(id: string) {
+  static deletePlayerRoute(id: string) {
     return fetch(API_ROUTE.DELETE_PLAYER, {
       method: "POST",
       headers: JSON_HEADER,
@@ -136,7 +141,7 @@ export class ApiClient {
     });
   }
 
-  static addNewPlayer(player_name: string, photo?: string) {
+  static addNewPlayerRoute(player_name: string, photo?: string) {
     const body = {
       player_name: player_name,
       player_photo: photo,
@@ -153,6 +158,14 @@ export class ApiClient {
     return fetch(API_ROUTE.UPLOAD_PHOTO, {
       method: "POST",
       body: formData,
+    });
+  }
+
+  static createGameRoute(team1: string, team2: string) {
+    return fetch(API_ROUTE.CREATE_TEAM, {
+      method: "POST",
+      headers: JSON_HEADER,
+      body: JSON.stringify({ team1: team1, team2: team2 } as CreateGameRequest),
     });
   }
 }
