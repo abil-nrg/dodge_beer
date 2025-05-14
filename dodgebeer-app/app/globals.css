@@ -54,6 +54,7 @@ body{
   color: var(--text-clr);
   display:grid;
   grid-template-columns: auto 1fr;
+  overflow: hidden;
 }
 
 /* small screens don't need sidebar */
