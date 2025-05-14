@@ -9,12 +9,12 @@ import { MainDataConfig, MainDataType } from "@/types/main-data";
 /**
  * Absolute path to the backend data directory.
  */
-const CUR_PATH = path.join(process.cwd(), "backend", "data");
+const DATA_FOLDER_PATH = path.join(process.cwd(), "backend", "data");
 
 /**
  * Full path to the main data file used for storing application state.
  */
-const DATA_FILE = path.join(CUR_PATH, MainDataConfig.DATA_FILE);
+const DATA_FILE = path.join(DATA_FOLDER_PATH, MainDataConfig.DATA_FILE);
 
 /**
  * Options for the `ensureFileExists` utility.
@@ -93,7 +93,7 @@ function readMainDataFile(): MainDataType {
 }
 
 export {
-  CUR_PATH,
+  DATA_FOLDER_PATH,
   DATA_FILE,
   ensureFileExists,
   overwriteFile,

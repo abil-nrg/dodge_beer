@@ -50,7 +50,7 @@ export default function PlayersPages() {
   }
 
   async function handleAddNewPlayerModal(playerName: string, photo?: string) {
-    await ApiClient.addNewPlayer(playerName, photo);
+    await ApiClient.addNewPlayerRoute(playerName, photo);
 
     await fetchPlayers();
     toast.success("Player Added!");

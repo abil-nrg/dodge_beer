@@ -42,7 +42,7 @@ export default function TeamsPage() {
   useEffect(() => {
     async function fetchTeams() {
       try {
-        const response = await ApiClient.GetAllTeams();
+        const response = await ApiClient.GetAllTeamsRoute();
         const result = (await response.json()) as ApiResponse<
           GetAllTeamsResponse | ResponseWithErrorInData
         >;

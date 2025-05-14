@@ -1,6 +1,5 @@
-import styles from "app/dashboard.module.css";
-export default function Home() {
-  const cur_year = new Date().getFullYear();
+import Dashboard from "@/app/components/Dashboard/Dashboard";
 
-  return <div className={styles.container}></div>;
+export default function Home() {
+  return <Dashboard />;
 }

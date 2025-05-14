@@ -22,7 +22,7 @@ export async function removePlayerFromTeam(
   playerId: string,
   teamId: string,
 ): Promise<string[] | string | undefined> {
-  const response = await ApiClient.removePlayerFromTeam(playerId, teamId);
+  const response = await ApiClient.removePlayerFromTeamRoute(playerId, teamId);
   const result: ApiResponse<
     ChangePlayerStatusInTeamResponse | ResponseWithErrorInData
   > = await response.json();
@@ -48,7 +48,7 @@ export async function removePlayerFromTeam(
  * @returns The parsed API response or an error message
  */
 export function addNewPlayerToTeam(teamId: string, playerId: string) {
-  ApiClient.addNewPlayerToTeam(teamId, playerId);
+  ApiClient.addNewPlayerToTeamRoute(teamId, playerId);
 }
 
 //-----------------------------------------------------------------------------//
@@ -62,7 +62,7 @@ export async function deleteTeamService(
   teamId: string,
 ): Promise<true | string> {
   try {
-    const res = await ApiClient.deleteTeam(teamId);
+    const res = await ApiClient.deleteTeamRoute(teamId);
     const json: ApiResponse<
       DeleteTeamOrPlayerResponse | ResponseWithErrorInData
     > = await res.json();
@@ -87,7 +87,7 @@ export async function deleteTeamService(
  * @param teamName - Team name
  */
 export async function createTeam(teamName: string) {
-  const response = await ApiClient.createTeam(teamName);
+  const response = await ApiClient.createTeamRoute(teamName);
   const result = (await response.json()) as CreateTeamResponse;
   return result.team_key;
 }
