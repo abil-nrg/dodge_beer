@@ -2,14 +2,26 @@
 
 import styles from "./Dashboard.module.css";
 import DashboardButton from "@/app/components/ui/DashboardButton/DashboardButton";
-import { useState } from "react";
+import React, { useState } from "react";
 import CreateGameModal from "@/app/components/DashboardPageComponents/CreateGameModal/CreateGameModal";
+import { createNewGameService } from "@/app/services/gameService";
+import { useRouter } from "next/navigation";
+
+import { toast, ToastContainerCustom } from "@/app/util/toast-alert-config";
 export default function Dashboard() {
+  const router = useRouter();
+
   const cur_year = new Date().getFullYear();
   const [isCreateGameModalOpen, setIsCreateGameModalOpen] = useState(false);
 
   async function newGameCreation(team1: string, team2: string) {
     setIsCreateGameModalOpen(false);
+    try {
+      const gameId = await createNewGameService(team1, team2);
+      router.push(`/game/${gameId}`);
+    } catch (error) {
+      toast.error("Could not create game!");
+    }
   }
   async function clearDataClick() {}
   return (
@@ -38,6 +50,7 @@ export default function Dashboard() {
           onClose={() => setIsCreateGameModalOpen(false)}
         />
       )}
+      <ToastContainerCustom />
     </>
   );
 }

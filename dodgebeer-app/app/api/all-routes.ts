@@ -34,7 +34,7 @@ const API_ROUTE = {
   REMOVE_PLAYER_FROM_TEAM: `${MAIN_DATA_API}${TEAMS}/remove-player-from-team`,
 
   //GAME ROUTES
-  CREATE_GAME: `${MAIN_DATA_API}${GAME}/create-game`,
+  CREATE_GAME: `${API}${GAME}/create-game`,
 };
 
 interface AddQueryParamToUrnProps {
@@ -162,10 +162,14 @@ export class ApiClient {
   }
 
   static createGameRoute(team1: string, team2: string) {
-    return fetch(API_ROUTE.CREATE_TEAM, {
+    return fetch(API_ROUTE.CREATE_GAME, {
       method: "POST",
       headers: JSON_HEADER,
       body: JSON.stringify({ team1: team1, team2: team2 } as CreateGameRequest),
     });
+  }
+
+  static getGamePagePath(gameId: string) {
+    return `${MAIN_DATA_API}${GAME}/${gameId}`;
   }
 }
