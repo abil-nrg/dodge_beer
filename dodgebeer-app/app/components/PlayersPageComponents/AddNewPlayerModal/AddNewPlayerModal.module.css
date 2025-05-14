@@ -1,0 +1,28 @@
+.buttonRow {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+
+.fileInput {
+    display: none;
+}
+
+.fileInputLabel {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+}
+
+.fileInputLabel:hover {
+    background-color: #d4d4d4;
+}
+

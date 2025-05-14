@@ -3,6 +3,7 @@ import {
   CreateTeamRequest,
   DeleteTeamRequest,
 } from "@/types/team";
+import { CreatePlayerRequest, DeletePlayerRequest } from "@/types/player";
 
 const API = "/api";
 const MAIN_DATA_API = API + "/main-data";
@@ -21,6 +22,7 @@ const API_ROUTE = {
   CREATE_PLAYER: `${MAIN_DATA_API}${PLAYERS}/create-player`,
   DELETE_PLAYER: `${MAIN_DATA_API}${PLAYERS}/delete-player`,
   GET_PLAYER_NOT_IN_TEAM: `${MAIN_DATA_API}${PLAYERS}/getPlayersNotInTeam`,
+  UPLOAD_PHOTO: `${MAIN_DATA_API}${PLAYERS}/upload-image`,
 
   // TEAM ROUTES
   GET_ALL_TEAMS: `${MAIN_DATA_API}${TEAMS}`,
@@ -117,6 +119,40 @@ export class ApiClient {
       body: JSON.stringify({
         team_name: teamName,
       } as CreateTeamRequest),
+    });
+  }
+
+  static getAllPlayers() {
+    return fetch(API_ROUTE.GET_ALL_PLAYERS, {
+      method: "GET",
+    });
+  }
+
+  static deletePlayer(id: string) {
+    return fetch(API_ROUTE.DELETE_PLAYER, {
+      method: "POST",
+      headers: JSON_HEADER,
+      body: JSON.stringify({ player_id: id } as DeletePlayerRequest),
+    });
+  }
+
+  static addNewPlayer(player_name: string, photo?: string) {
+    const body = {
+      player_name: player_name,
+      player_photo: photo,
+    };
+
+    return fetch(API_ROUTE.CREATE_PLAYER, {
+      method: "POST",
+      headers: JSON_HEADER,
+      body: JSON.stringify(body as CreatePlayerRequest),
+    });
+  }
+
+  static uploadPhotoRoute(formData: FormData) {
+    return fetch(API_ROUTE.UPLOAD_PHOTO, {
+      method: "POST",
+      body: formData,
     });
   }
 }

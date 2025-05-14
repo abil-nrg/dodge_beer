@@ -8,6 +8,7 @@ export const MainDataConfig = {
   TEAM: "team",
   TEAMS: "teams",
   DEFAULT_PHOTO: "default.jpg",
+  UPLOAD_FOLDER: "/uploads",
   EMPTY_DATA_FILE: {
     player_count: 0,
     team_count: 0,

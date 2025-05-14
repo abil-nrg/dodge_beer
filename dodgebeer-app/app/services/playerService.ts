@@ -5,6 +5,7 @@ import { ApiClient } from "@/app/api/all-routes";
 //types
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
 import {
+  GetAllPlayersResponse,
   GetPlayerByIdResponse,
   GetPlayerNotInTeamResponse,
 } from "@/types/player";
@@ -81,4 +82,29 @@ export async function fetchAllAvailablePlayers() {
     (await response.json()) as ApiResponse<GetPlayerNotInTeamResponse>;
 
   return result.data;
+}
+
+//-----------------------------------------------------------------------------//
+/**
+ * Fetch all players
+ *
+ * @returns
+ */
+//-----------------------------------------------------------------------------//
+export async function fetchAllPlayers() {
+  const response = await ApiClient.getAllPlayers();
+  const result = (await response.json()) as ApiResponse<GetAllPlayersResponse>;
+
+  return result.data;
+}
+
+//-----------------------------------------------------------------------------//
+/**
+ * Deletes player by id
+ *
+ * @returns
+ */
+//-----------------------------------------------------------------------------//
+export async function deletePlayerById(id: string) {
+  ApiClient.deletePlayer(id);
 }
