@@ -7,8 +7,6 @@ import { FullTeamObject, GetBothTeamsResponse } from "@/types/team";
 import {
   EmptyRound,
   GameConfig,
-  GameData,
-  PlayerAction,
   PlayerActionType,
   Round,
   TeamKeys,

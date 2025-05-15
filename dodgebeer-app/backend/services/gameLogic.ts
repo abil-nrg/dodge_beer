@@ -9,10 +9,7 @@ import {
   getTeamKeyByTeamId,
   isRoundsEmpty,
 } from "@backend/services/gameUtil";
-import { round } from "@popperjs/core/lib/utils/math";
 import { overWriteGameFile } from "@backend/services/createGameObject";
-
-export function handleFirstHit(game: GameData) {}
 
 export function handleHit(
   gameId: string,
