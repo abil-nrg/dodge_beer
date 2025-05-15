@@ -18,6 +18,12 @@
     white-space: nowrap;
     transition: background-color 0.2s, box-shadow 0.2s;
 }
+/* SIZE */
+.btn--large {
+    font-size: 18px;
+    padding: 10px 24px;
+    line-height: 24px;
+}
 
 /* GREEN theme */
 .btn--green {
@@ -48,9 +54,20 @@
 }
 
 
-.btn:disabled {
+.btn--green:disabled {
     background-color: #94d3a2;
     border-color: rgba(27, 31, 35, 0.1);
     color: rgba(255, 255, 255, 0.8);
     cursor: default;
+}
+.btn--red:disabled {
+    background-color: #d39494;
+    border-color: rgba(27, 31, 35, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    cursor: default;
+}
+
+/* OPACITY */
+.btn--transparent{
+    opacity: 0.8;
 }

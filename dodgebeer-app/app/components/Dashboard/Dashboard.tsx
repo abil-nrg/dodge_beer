@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./Dashboard.module.css";
-import DashboardButton from "@/app/components/ui/DashboardButton/DashboardButton";
+import Button from "@/app/components/ui/DashboardButton/Button";
 import React, { useState } from "react";
 import CreateGameModal from "@/app/components/DashboardPageComponents/CreateGameModal/CreateGameModal";
 import { createNewGameService } from "@/app/services/gameService";
@@ -30,12 +30,12 @@ export default function Dashboard() {
         <div className={styles["top-elements"]}>
           <h1 id={styles["welcome-text"]}>Welcome to Dodge Beer {cur_year}</h1>
           <div className={styles["button-group"]}>
-            <DashboardButton
+            <Button
               text={"New Game"}
               color={"green"}
               onClick={() => setIsCreateGameModalOpen(true)}
             />
-            <DashboardButton
+            <Button
               text={"Clear Data"}
               color={"red"}
               onClick={clearDataClick}
