@@ -1,8 +1,14 @@
-import { z } from "zod";
-
-export const GameData = {
+export const GameConfig = {
   GAME: "game",
-};
+  TEAM1_KEY: "team1_id",
+  TEAM2_KEY: "team2_id",
+  ATTACK: "ATTACK",
+  DEFENCE: "DEFENCE",
+} as const;
+
+export type TeamKeys = "team1_id" | "team2_id";
+
+export type TeamSideInGame = "ATTACK" | "DEFENCE";
 
 export type GameStatus = "NOT_STARTED" | "IN_PROGRESS" | "DONE";
 
@@ -13,9 +19,15 @@ export interface PlayerAction {
   time: number;
 }
 
+export interface TeamRoundData {
+  side: TeamSideInGame;
+  players: Record<string, PlayerAction[]>;
+}
+
 export interface Round {
-  team1_id: Record<string, PlayerAction[]>;
-  team2_id: Record<string, PlayerAction[]>;
+  team1_id: TeamRoundData;
+  team2_id: TeamRoundData;
+  players_done: string[];
 }
 
 export interface GameData {
@@ -25,3 +37,15 @@ export interface GameData {
   round_counter: number;
   rounds: Round[];
 }
+
+export const EmptyRound = {
+  team1_id: {
+    side: "ATTACK",
+    players: {},
+  },
+  team2_id: {
+    side: "DEFENCE",
+    players: {},
+  },
+  players_done: [],
+};
