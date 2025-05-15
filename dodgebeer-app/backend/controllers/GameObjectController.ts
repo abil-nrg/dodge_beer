@@ -6,6 +6,8 @@ import {
 } from "@backend/services/readFile";
 import { createGameObjectService } from "@backend/services/createGameObject";
 import { ApiSuccess } from "@/types/api";
+import { GetBothTeamsResponse } from "@/types/team";
+import { getTeamAndPlayersByGameId } from "@backend/services/gameUtil";
 
 export async function createGameHandler(body: CreateGameRequest) {
   const mainData = readMainDataFile();
@@ -22,4 +24,9 @@ export async function createGameHandler(body: CreateGameRequest) {
   // return response
   const response = { gameId: gameFileName } as CreateGameResponse;
   return ApiSuccess<CreateGameResponse>(response, 201);
+}
+
+export async function getTeamInfoForGameHandler(gameId: string) {
+  const body = getTeamAndPlayersByGameId(gameId);
+  return ApiSuccess<GetBothTeamsResponse>(body);
 }

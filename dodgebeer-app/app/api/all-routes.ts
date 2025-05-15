@@ -10,7 +10,7 @@ const API = "/api";
 const MAIN_DATA_API = API + "/main-data";
 const PLAYERS = "/players";
 const TEAMS = "/teams";
-const GAME = "/game";
+const GAME_DATA_API = API + "/game";
 
 const API_ROUTE = {
   API,
@@ -34,7 +34,8 @@ const API_ROUTE = {
   REMOVE_PLAYER_FROM_TEAM: `${MAIN_DATA_API}${TEAMS}/remove-player-from-team`,
 
   //GAME ROUTES
-  CREATE_GAME: `${API}${GAME}/create-game`,
+  CREATE_GAME: `${GAME_DATA_API}/create-game`,
+  GET_TEAMS_INFO_PATH: "get-teams-info",
 };
 
 interface AddQueryParamToUrnProps {
@@ -170,6 +171,12 @@ export class ApiClient {
   }
 
   static getGamePagePath(gameId: string) {
-    return `${MAIN_DATA_API}${GAME}/${gameId}`;
+    return `${GAME_DATA_API}/${gameId}`;
+  }
+
+  static getBothTeamsInfoByGameId(gameId: string) {
+    const path =
+      ApiClient.getGamePagePath(gameId) + "/" + API_ROUTE.GET_TEAMS_INFO_PATH;
+    return fetch(path, { method: "GET" });
   }
 }

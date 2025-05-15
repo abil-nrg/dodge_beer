@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 import { MainDataSchema, PlayerSchema } from "@/types/main-data";
 
 /**
@@ -93,3 +93,11 @@ export const UploadPlayerPhotoRequestSchema = z.object({
 export type UploadPlayerPhotoRequest = z.infer<
   typeof UploadPlayerPhotoRequestSchema
 >;
+
+//-----------------------------------------------------------------------------//
+
+export type PlayerObject = {
+  player_id: string;
+  player_name: string;
+  player_photo: string;
+};
