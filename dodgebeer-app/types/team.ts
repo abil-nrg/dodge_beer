@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MainDataSchema, TeamSchema } from "@/types/main-data";
+import { PlayerObject } from "@/types/player";
 
 //-----------------------------------------------------------------------------//
 
@@ -73,3 +74,20 @@ export const DeleteTeamOrPlayerResponseSchema = z.object({
 export type DeleteTeamOrPlayerResponse = z.infer<
   typeof DeleteTeamOrPlayerResponseSchema
 >;
+
+//-----------------------------------------------------------------------------//
+export type TeamObject = {
+  team_id: string;
+  team_name: string;
+  players: string[];
+};
+
+export type FullTeamObject = {
+  team: TeamObject;
+  players: PlayerObject[];
+};
+
+export type GetBothTeamsResponse = {
+  team1: FullTeamObject;
+  team2: FullTeamObject;
+};

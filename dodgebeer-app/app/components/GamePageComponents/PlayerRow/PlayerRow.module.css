@@ -1,0 +1,39 @@
+.playerRow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.4rem 0.3rem;
+    border-radius: 9px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.playerImage {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 2px solid #aac7ff;
+    background: #eef3fd;
+}
+
+.playerName {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #1c305a;
+    word-break: break-word;
+}
+
+.button-group{
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    gap: 1rem;
+}
+
+.playerIsDoneBtn{
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: red;
+}

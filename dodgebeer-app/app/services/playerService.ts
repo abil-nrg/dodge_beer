@@ -49,7 +49,7 @@ export async function getPlayersMapFromIds(
  */
 //-----------------------------------------------------------------------------//
 export async function fetchPlayerInfoById(player_id: string) {
-  const response = await ApiClient.GetPLayerById(player_id);
+  const response = await ApiClient.GetPLayerByIdRoute(player_id);
   const result = (await response.json()) as ApiResponse<
     GetPlayerByIdResponse | ResponseWithErrorInData
   >;
@@ -77,7 +77,7 @@ export async function fetchPlayerInfoById(player_id: string) {
  */
 //-----------------------------------------------------------------------------//
 export async function fetchAllAvailablePlayers() {
-  const response = await ApiClient.getPlayersNotInTeam();
+  const response = await ApiClient.getPlayersNotInTeamRoute();
   const result =
     (await response.json()) as ApiResponse<GetPlayerNotInTeamResponse>;
 
@@ -92,7 +92,7 @@ export async function fetchAllAvailablePlayers() {
  */
 //-----------------------------------------------------------------------------//
 export async function fetchAllPlayers() {
-  const response = await ApiClient.getAllPlayers();
+  const response = await ApiClient.getAllPlayersRoute();
   const result = (await response.json()) as ApiResponse<GetAllPlayersResponse>;
 
   return result.data;
@@ -106,5 +106,5 @@ export async function fetchAllPlayers() {
  */
 //-----------------------------------------------------------------------------//
 export async function deletePlayerById(id: string) {
-  ApiClient.deletePlayer(id);
+  ApiClient.deletePlayerRoute(id);
 }

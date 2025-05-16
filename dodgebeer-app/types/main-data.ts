@@ -16,7 +16,6 @@ export const MainDataConfig = {
     players: {},
     teams: {},
   },
-  EMPTY_GAME_FILE: {},
 };
 
 /**

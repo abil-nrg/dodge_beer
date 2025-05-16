@@ -5,16 +5,17 @@ import path from "path";
 import fs from "fs";
 // types
 import { MainDataConfig, MainDataType } from "@/types/main-data";
+import { GameData } from "@/types/game-data";
 
 /**
  * Absolute path to the backend data directory.
  */
-const CUR_PATH = path.join(process.cwd(), "backend", "data");
+const DATA_FOLDER_PATH = path.join(process.cwd(), "backend", "data");
 
 /**
  * Full path to the main data file used for storing application state.
  */
-const DATA_FILE = path.join(CUR_PATH, MainDataConfig.DATA_FILE);
+const DATA_FILE = path.join(DATA_FOLDER_PATH, MainDataConfig.DATA_FILE);
 
 /**
  * Options for the `ensureFileExists` utility.
@@ -92,10 +93,23 @@ function readMainDataFile(): MainDataType {
   return JSON.parse(data) as MainDataType;
 }
 
+/**
+ * Reads and parses game data file from disk
+ * @param gameId "game1", "game2", etc
+ *
+ * @returns Parsed data
+ */
+function readGameDataFile(gameId: string): GameData {
+  const gameFilePath = path.join(DATA_FOLDER_PATH, `${gameId}.json`);
+  const data = fs.readFileSync(gameFilePath, "utf-8");
+  return JSON.parse(data) as GameData;
+}
+
 export {
-  CUR_PATH,
+  DATA_FOLDER_PATH,
   DATA_FILE,
   ensureFileExists,
   overwriteFile,
   readMainDataFile,
+  readGameDataFile,
 };
