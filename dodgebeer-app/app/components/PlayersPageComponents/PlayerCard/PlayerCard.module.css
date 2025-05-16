@@ -1,0 +1,56 @@
+.playerCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    transition: transform 0.2s ease;
+    width: 300px;
+    height: 300px;
+}
+
+.playerCard:hover {
+    transform: scale(1.03);
+}
+
+.playerCard.activeCard{
+    transform: scale(1.03);
+}
+
+.playerCard img {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #000000;
+}
+
+.playerCard h2 {
+    margin-top: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* delete player button */
+.deletePlayerCard {
+    visibility: hidden;
+    position: absolute;
+    border:none;
+    color: red;
+    background: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+
+    right: 1em; /* Move a bit to the right */
+    top: 5%;
+
+}
+
+.activeCard .deletePlayerCard {
+    visibility: visible;
+}
+
+.playerCard:hover .deletePlayerCard {
+    visibility: visible;
+}

@@ -81,3 +81,15 @@ export type DeletePlayerRequest = z.infer<typeof DeletePlayerRequestSchema>;
  * GET AVAILABLE PEOPLE (NOT IN TEAM)
  */
 export type GetPlayerNotInTeamResponse = PlayerWithId[];
+
+//-----------------------------------------------------------------------------//
+
+/**
+ * DELETE PLAYER REQUEST
+ */
+export const UploadPlayerPhotoRequestSchema = z.object({
+  photo: z.string().min(1),
+});
+export type UploadPlayerPhotoRequest = z.infer<
+  typeof UploadPlayerPhotoRequestSchema
+>;
