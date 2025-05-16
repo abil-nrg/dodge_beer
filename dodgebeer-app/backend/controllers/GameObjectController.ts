@@ -21,6 +21,7 @@ import {
   handleSave,
 } from "@backend/services/gameLogic";
 import { Mutex } from "async-mutex";
+import { getGameLock } from "@backend/lock/GameLock";
 
 export async function createGameHandler(body: CreateGameRequest) {
   const mainData = readMainDataFile();
@@ -50,12 +51,11 @@ export async function gameHitClickedHandler(
   playerId: string,
   time?: number,
 ) {
-  try {
+  const mutex = getGameLock(gameId);
+  await mutex.runExclusive(async () => {
     const game = handleHit(gameId, teamId, playerId, time);
-    overWriteGameFile(gameId, game);
-  } catch (error) {
-    console.error("Error!\n", error);
-  }
+    await overWriteGameFile(gameId, game);
+  });
   return ApiSuccess<null>(null);
 }
 
@@ -65,12 +65,11 @@ export async function gameSaveClickedHandler(
   playerId: string,
   time?: number,
 ) {
-  try {
+  const mutex = getGameLock(gameId);
+  await mutex.runExclusive(async () => {
     const game = handleSave(gameId, teamId, playerId, time);
-    overWriteGameFile(gameId, game);
-  } catch (error) {
-    console.error("Error!\n", error);
-  }
+    await overWriteGameFile(gameId, game);
+  });
   return ApiSuccess<null>(null);
 }
 

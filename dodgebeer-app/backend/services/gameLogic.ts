@@ -17,49 +17,36 @@ function handleFirstEverAction(
   actionTeamKey: GetTeamKeyByTeamIdReturnType,
   playerId: string,
   time?: number,
-) {
-  console.log("----------------------");
-  console.log("Handling First Action Ever");
-  console.log("playerId is " + playerId);
-  console.log("actionTeamKey is " + actionTeamKey);
-  // check if T2 scored. if so need to create first round empty since T1 missed everything
-  const newRounds: Round[] = [];
+): Round[] {
+  const emptyRound = getEmptyRound();
+
   if (actionTeamKey.curSide === GameConfig.TEAM1_KEY) {
-    //team 1 scored -> T1 started Round1
-    console.log("Team 1 HITS!");
-    newRounds.push(
-      addActionToPlayer({
-        round: getEmptyRound(),
-        player_id: playerId,
-        action: "HIT",
-        time: time,
-        teamKey: GameConfig.TEAM1_KEY,
-      }),
-    );
+    // TEAM1 starts the game with a HIT
+    const round = addActionToPlayer({
+      round: emptyRound,
+      player_id: playerId,
+      action: "HIT",
+      time,
+      teamKey: GameConfig.TEAM1_KEY,
+    });
+    return [round];
   } else {
-    //team 2 scored -> T1 missed Round1 -> T2 started Round2
-    console.log("Team 1 MISS!");
-    console.log("Team 2 HITS!");
-    const t2AttackRound = addActionToPlayer({
+    // TEAM2 scored first, meaning TEAM1 missed everything
+    const missedRound = getEmptyRound();
+    const t2Round = addActionToPlayer({
       round: getEmptyRound(),
       player_id: playerId,
       action: "HIT",
-      time: time,
+      time,
       teamKey: GameConfig.TEAM2_KEY,
     });
-    // need to make sure t2 is ATTACK
-    setTeamToAttack(t2AttackRound, {
+    const t2AttackRound = setTeamToAttack(t2Round, {
       curSide: GameConfig.TEAM2_KEY,
       oppositeSide: GameConfig.TEAM1_KEY,
     });
 
-    newRounds.push(getEmptyRound()); // T1 missed all
-    newRounds.push(t2AttackRound);
+    return [missedRound, t2AttackRound];
   }
-  console.log("New Rounds length is " + newRounds.length);
-  console.log("----------------------");
-  //overwrite file
-  return newRounds;
 }
 
 export function handleHit(
@@ -68,64 +55,67 @@ export function handleHit(
   playerId: string,
   time?: number,
 ) {
+  console.log("------------------------------");
+  console.log("HIT RECEIVED FOR " + playerId);
+  console.log("------------------------------");
+
   const game = readGameDataFile(gameId);
-  const rounds = game.rounds;
-  // find team Key
+  const { team1_id, team2_id, rounds } = game;
+
   const actionTeamKey = getTeamKeyByTeamId({
-    data: { team1_id: game.team1_id, team2_id: game.team2_id },
+    data: { team1_id, team2_id },
     inputTeamId: teamId,
   });
-  console.log("actionTeamKey is " + actionTeamKey + "\n");
-  // first action ever
-  if (isRoundsEmpty(rounds)) {
-    game.status = "IN_PROGRESS";
-    game.rounds = handleFirstEverAction(actionTeamKey, playerId, time);
-    return game;
-  }
-  // another hit from existing round
-  const lastSavedRound = getCurRound(rounds);
 
-  // first need to verify if I should make new round
-  if (
-    playerId in lastSavedRound[actionTeamKey.curSide].players ||
-    lastSavedRound[actionTeamKey.curSide].side === "DEFENCE"
-  ) {
-    // player already had a HIT in curRound so actually need to make a new round
-    console.log(
-      "Player had action in last round, or last round was DEFENCE for him",
-    );
-    const curRound = addActionToPlayer({
+  if (isRoundsEmpty(rounds)) {
+    return {
+      ...game,
+      status: "IN_PROGRESS",
+      rounds: handleFirstEverAction(actionTeamKey, playerId, time),
+    };
+  }
+
+  const lastIndex = rounds.length - 1;
+  const lastRound = getCurRound(rounds);
+
+  const needsNewRound =
+    playerId in lastRound[actionTeamKey.curSide].players ||
+    lastRound[actionTeamKey.curSide].side === "DEFENCE";
+
+  if (needsNewRound) {
+    const newRound = addActionToPlayer({
       round: getEmptyRound(),
       player_id: playerId,
       action: "HIT",
+      time,
       teamKey: actionTeamKey.curSide,
-      time: time,
     });
-    // make sure team is attacking
-    const updatedRound0 = setTeamToAttack(curRound, actionTeamKey);
-    // done with all
-    game.rounds = [...game.rounds, updatedRound0];
-    return game;
+    const attackRound = setTeamToAttack(newRound, actionTeamKey);
+
+    return {
+      ...game,
+      rounds: [...rounds, attackRound],
+    };
   }
-  console.log("Player had no action yet. Appending to existing round");
-  // at this point player had no action in this round
-  // so just append new action
-  const updatedRound1 = addActionToPlayer({
-    round: lastSavedRound,
+
+  const updatedRound = addActionToPlayer({
+    round: lastRound,
     player_id: playerId,
     action: "HIT",
+    time,
     teamKey: actionTeamKey.curSide,
-    time: time,
   });
-  // make sure team is attacking
-  const updatedRound2 = setTeamToAttack(updatedRound1, actionTeamKey);
-  // done with all
-  const updatedRounds = [...game.rounds];
-  updatedRounds[rounds.length - 1] = updatedRound2;
-  //reassign
-  game.rounds = updatedRounds;
-  return game;
+
+  const finalRound = setTeamToAttack(updatedRound, actionTeamKey);
+  const updatedRounds = [...rounds];
+  updatedRounds[lastIndex] = finalRound;
+
+  return {
+    ...game,
+    rounds: updatedRounds,
+  };
 }
+
 //------------------------------------
 export function handleSave(
   gameId: string,
@@ -133,32 +123,42 @@ export function handleSave(
   playerId: string,
   time?: number,
 ) {
+  console.log("------------------------------");
+  console.log("SAVE RECEIVED FOR " + playerId);
+  console.log("------------------------------");
   const game = readGameDataFile(gameId);
-  let rounds = game.rounds;
-  let curRound = rounds[rounds.length - 1];
-  // gets which side teamId is on
+  const { team1_id, team2_id, rounds } = game;
+
+  const lastIndex = rounds.length - 1;
+  const currentRound = rounds[lastIndex];
+
   const actionTeamKey = getTeamKeyByTeamId({
-    data: { team1_id: game.team1_id, team2_id: game.team2_id },
+    data: { team1_id, team2_id },
     inputTeamId: teamId,
   });
 
-  // set team from player SAVE to Defence just in case
-  curRound = setTeamToDefence(curRound, actionTeamKey);
-  // add action
-  curRound = addActionToPlayer({
-    round: curRound,
+  // Apply SAVE and set defence
+  const updatedRound = addActionToPlayer({
+    round: setTeamToDefence(currentRound, actionTeamKey),
     player_id: playerId,
     action: "SAVE",
     teamKey: actionTeamKey.curSide,
-    time: time,
+    time,
   });
-  // reassign rounds and write to file
-  rounds[rounds.length - 1] = curRound;
-  game.rounds = rounds;
-  overWriteGameFile(gameId, game);
-  return game;
-}
 
+  // Replace the last round immutably
+  const updatedRounds = [...rounds];
+  updatedRounds[lastIndex] = updatedRound;
+
+  const updatedGame = {
+    ...game,
+    rounds: updatedRounds,
+  };
+
+  overWriteGameFile(gameId, updatedGame);
+  return updatedGame;
+}
+//------------------------------------
 export function getGameState(gameId: string) {
   const game = readGameDataFile(gameId);
   const rounds = game.rounds;
