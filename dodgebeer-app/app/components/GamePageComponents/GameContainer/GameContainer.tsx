@@ -3,8 +3,10 @@ import TeamCardInGame from "@/app/components/GamePageComponents/TeamCardInGame/T
 import { FullTeamObject } from "@/types/team";
 import { ApiClient } from "@/app/api/all-routes";
 import { ApiResponse } from "@/types/api";
-import { UpdateGameResponse } from "@/types/game-api";
-import { useState } from "react";
+import { PlayerStatsWithInfo, UpdateGameResponse } from "@/types/game-api";
+import { useEffect, useState } from "react";
+import { GameStatus } from "@/types/game-data";
+import { toast, ToastContainerCustom } from "@/app/util/toast-alert-config";
 interface Props {
   gameId: string;
   team1: FullTeamObject;
@@ -20,9 +22,22 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
   const [lastActionText, setLastActionText] = useState(
     "PLEASE START THE GAME NOW!",
   );
+  const [gameStatus, setGameStatus] = useState<GameStatus>("IN_PROGRESS");
+  const [playersStats, setPlayersStats] = useState<PlayerStatsWithInfo[]>([]);
   // disabling buttons
   const [team1DisableSave, setTeam1DisableSave] = useState(true);
   const [team2DisableSave, setTeam2DisableSave] = useState(true);
+
+  useEffect(() => {
+    updateGameState(); // doesn't need to be async
+  }, []);
+
+  useEffect(() => {
+    if (gameStatus === "DONE") {
+      getPlayerStats();
+      toast.info("GAME IS DONE. PLEASE STOP PLAYING");
+    }
+  }, [gameStatus]);
 
   function findTeamNameAndPlayer(team_id: string, player_id: string) {
     const info = {
@@ -60,6 +75,7 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
     setRoundCounter(data.round_counter);
     setTeam1Side(data.team1_side);
     setTeam2Side(data.team2_side);
+    setGameStatus(data.status);
   }
 
   async function handlePlayerHit(
@@ -87,6 +103,66 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
     const text = `${info.player_name} from ${info.team_name} made a SAVE!`;
     setLastActionText(text);
   }
+
+  async function getPlayerStats() {
+    const resp = await ApiClient.getPlayerStatsRoute(gameId);
+    const result = (await resp.json()) as ApiResponse<{
+      players: PlayerStatsWithInfo[];
+    }>;
+    setPlayersStats(result.data.players);
+  }
+
+  async function handlePlayerDone(player_id: string) {
+    await ApiClient.addPlayerIsDoneRoute(gameId, player_id);
+    await updateGameState();
+
+    setLastActionText("Someone finished their drink! Are you sure?!");
+  }
+  if (gameStatus === "DONE") {
+    return (
+      <>
+        <h1>GAME IS DONE!</h1>
+        <h3>STATS:</h3>
+
+        <div
+          style={{
+            maxHeight: "90vh", // Limit height so overflow can happen
+            overflowY: "auto", // Enable vertical scrolling
+            paddingRight: "1rem", // Padding so scrollbar doesn't overlap content
+          }}
+        >
+          {playersStats.map((p) => (
+            <div
+              key={p.player_id}
+              style={{
+                border: "1px solid #ccc",
+                margin: "1rem 0",
+                padding: "1rem",
+                borderRadius: "8px",
+              }}
+            >
+              <h4>
+                {p.player_name} of {p.team_name}
+              </h4>
+              <p>
+                ✅ HITS: {p.hits} out of {p.attack_rounds} ATTACK rounds
+              </p>
+              <p>
+                ❌ MISSES: {p.misses} out of {p.attack_rounds} ATTACK rounds
+              </p>
+              <p>
+                🛡️ SAVES: {p.saves} out of {p.defence_rounds} DEFENCE rounds
+              </p>
+              <p>🏁 DONE IN ROUND: {p.player_done_round ?? "N/A"}</p>
+            </div>
+          ))}
+        </div>
+
+        <ToastContainerCustom />
+      </>
+    );
+  }
+
   return (
     <>
       <h1 className={styles["round-text"]}>Round {roundCounter}</h1>
@@ -98,6 +174,7 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
               team={team1}
               onPlayerHit={handlePlayerHit}
               onPlayerSave={handlePlayerSave}
+              onPlayerDone={handlePlayerDone}
             />
           </div>
           <div className={styles["team-section"]}>
@@ -106,6 +183,7 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
               team={team2}
               onPlayerHit={handlePlayerHit}
               onPlayerSave={handlePlayerSave}
+              onPlayerDone={handlePlayerDone}
             />
           </div>
         </div>

@@ -16,7 +16,9 @@ import { ApiSuccess } from "@/types/api";
 import { GetBothTeamsResponse } from "@/types/team";
 import { getTeamAndPlayersByGameId } from "@backend/services/gameUtil";
 import {
+  addPlayerDone,
   getGameState,
+  getPlayerStats,
   handleHit,
   handleSave,
 } from "@backend/services/gameLogic";
@@ -73,6 +75,15 @@ export async function gameSaveClickedHandler(
   return ApiSuccess<null>(null);
 }
 
+export async function gamePlayerIsDone(gameId: string, playerId: string) {
+  const mutex = getGameLock(gameId);
+  await mutex.runExclusive(async () => {
+    const game = addPlayerDone(gameId, playerId);
+    await overWriteGameFile(gameId, game);
+  });
+  return ApiSuccess<null>(null);
+}
+
 export async function getGameStatusHandler(gameId: string) {
   try {
     const gameState = getGameState(gameId);
@@ -81,4 +92,8 @@ export async function getGameStatusHandler(gameId: string) {
     console.error("Error!\n", error);
     return ApiSuccess<null>(null);
   }
+}
+
+export async function getPlayerStatsHandler(gameId: string) {
+  return getPlayerStats(gameId);
 }

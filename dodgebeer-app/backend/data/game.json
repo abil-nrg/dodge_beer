@@ -5,22 +5,37 @@
   "rounds": [
     {
       "team1_id": {
-        "player1": [
-          { "action": "HIT", "time": 2.11 }
-        ],
-        "player2": [
-          { "action": "HIT", "time": 1.5 }
-        ]
+        "side": "ATTACK",
+        "players": {
+          "player1": [
+            { "action": "HIT", "time": 2.11 }
+          ],
+          "player2": [
+            { "action": "HIT", "time": 1.5 }
+          ]
+        }
       },
       "team2_id": {
-        "player6": [
-          { "action": "SAVE", "time": 2.11 },
-          { "action": "SAVE", "time": 1.5 }
-        ]
-      }
+        "side": "DEFENCE",
+        "players": {
+          "player6": [
+            { "action": "SAVE", "time": 2.11 },
+            { "action": "SAVE", "time": 1.5 }
+          ]
+        }
+      },
+      "players_done": []
     },
     {
-
+      "team1_id": {
+        "side": "ATTACK",
+        "players": {}
+      },
+      "team2_id": {
+        "side": "DEFENCE",
+        "players": {}
+      },
+      "players_done": []
     }
   ]
 }

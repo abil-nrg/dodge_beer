@@ -10,12 +10,14 @@ interface Props {
   isDisableSave?: boolean;
   onHitClick: (player_id: string, time?: number) => void;
   onSaveClick: (player_id: string, time?: number) => void;
+  onPlayerDoneClick: (player_id: string) => void;
 }
 export default function PlayerRow({
   player,
   onHitClick,
   onSaveClick,
   isDisableSave = false,
+  onPlayerDoneClick,
 }: Props) {
   const [disabled, setDisabled] = useState<boolean>(false);
   async function handleHitClick() {
@@ -28,6 +30,11 @@ export default function PlayerRow({
     onSaveClick(player.player_id, time);
   }
 
+  async function handlePlayerDoneClick() {
+    setDisabled(true);
+    onPlayerDoneClick(player.player_id);
+  }
+
   return (
     <div className={styles.playerRow} key={player.player_id}>
       <img
@@ -38,9 +45,7 @@ export default function PlayerRow({
       <span className={styles.playerName}>{player.player_name}</span>
       <button
         className={styles.playerIsDoneBtn}
-        onClick={() => {
-          setDisabled(true);
-        }}
+        onClick={handlePlayerDoneClick}
       >
         <IoIosRemoveCircleOutline />
       </button>

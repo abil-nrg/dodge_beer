@@ -7,6 +7,7 @@ import { FullTeamObject, GetBothTeamsResponse } from "@/types/team";
 import {
   EmptyRound,
   GameConfig,
+  PlayerAction,
   PlayerActionType,
   Round,
   TeamKeys,
@@ -54,7 +55,63 @@ export function isNoActionRound(round: Round) {
 }
 
 /** -------------------------------------------- **/
-export function getCurRound(rounds: Round[]) {
+// export function deleteAllExtraHits(round: Round, teamKey: TeamKeys) {
+//   const team = round[teamKey];
+//
+//   const cleanedPlayers: Record<string, PlayerAction[]> = {};
+//
+//   Object.entries(team.players).forEach(([playerId, actions]) => {
+//     // Keep only the last HIT if it exists
+//     const lastHit = [...actions].reverse().find((a) => a.action === "HIT");
+//     if (lastHit) {
+//       cleanedPlayers[playerId] = [lastHit];
+//     }
+//   });
+//
+//   return {
+//     ...round,
+//     [teamKey]: {
+//       ...team,
+//       players: cleanedPlayers,
+//     },
+//   };
+// }
+/** -------------------------------------------- **/
+export function cleanUpRoundActions(round: Round): Round {
+  const cleanedRound: Round = { ...round };
+
+  (["team1_id", "team2_id"] as TeamKeys[]).forEach((teamKey) => {
+    const team = round[teamKey];
+    const cleanedPlayers: Record<string, PlayerAction[]> = {};
+
+    Object.entries(team.players).forEach(([playerId, actions]) => {
+      if (team.side === GameConfig.ATTACK) {
+        // Keep only the last HIT if any
+        const lastHit = [...actions].reverse().find((a) => a.action === "HIT");
+        if (lastHit) {
+          cleanedPlayers[playerId] = [lastHit];
+        }
+      } else if (team.side === GameConfig.DEFENCE) {
+        // Remove all HITs
+        const filtered = actions.filter((a) => a.action !== "HIT");
+        if (filtered.length > 0) {
+          cleanedPlayers[playerId] = filtered;
+        }
+        // If filtered is empty, player will be omitted entirely
+      }
+    });
+
+    cleanedRound[teamKey] = {
+      ...team,
+      players: cleanedPlayers,
+    };
+  });
+
+  return cleanedRound;
+}
+
+/** -------------------------------------------- **/
+export function getLastRound(rounds: Round[]) {
   const len = rounds.length;
   return rounds[len - 1];
 }
@@ -138,7 +195,17 @@ export function flipTeamSides(round: Round): Round {
 /** -------------------------------------------- **/
 
 export function getEmptyRound() {
-  return EmptyRound as Round;
+  return {
+    team1_id: {
+      side: "ATTACK",
+      players: {},
+    },
+    team2_id: {
+      side: "DEFENCE",
+      players: {},
+    },
+    players_done: [],
+  } as Round;
 }
 
 /** -------------------------------------------- **/

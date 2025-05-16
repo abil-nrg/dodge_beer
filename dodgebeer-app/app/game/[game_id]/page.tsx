@@ -5,6 +5,8 @@ import { ApiClient } from "@/app/api/all-routes";
 import { ApiResponse } from "@/types/api";
 import { FullTeamObject, GetBothTeamsResponse } from "@/types/team";
 import GameContainer from "@/app/components/GamePageComponents/GameContainer/GameContainer";
+import { height } from "dom-helpers";
+import { auto } from "@popperjs/core";
 
 export default function GamePage({
   params,

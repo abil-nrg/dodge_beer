@@ -39,6 +39,8 @@ const API_ROUTE = {
   GAME_PLAYER_HIT_PATH: "/player-hit",
   GAME_PLAYER_SAVE_PATH: "/player-save",
   GAME_GET_STATUS: "/get-game-status",
+  GAME_ADD_PLAYER_DONE: "/add-player-done",
+  GAME_PLAYERS_STATS: "/get-players-stats",
 };
 
 interface AddQueryParamToUrnProps {
@@ -222,6 +224,25 @@ export class ApiClient {
 
   static getGameStatusRoute(gameId: string) {
     const path = ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_GET_STATUS;
+
+    return fetch(path, { method: "GET" });
+  }
+
+  static addPlayerIsDoneRoute(gameId: string, player_id: string) {
+    const path =
+      ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_ADD_PLAYER_DONE;
+
+    const url = this.#AddQueryParamToUrn({
+      base: path,
+      params: { player_id },
+    });
+
+    return fetch(url, { method: "GET" });
+  }
+
+  static getPlayerStatsRoute(gameId: string) {
+    const path =
+      ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_PLAYERS_STATS;
 
     return fetch(path, { method: "GET" });
   }
