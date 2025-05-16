@@ -2,9 +2,7 @@ import { getTeamInfoForGameHandler } from "@backend/controllers/GameObjectContro
 import { NextRequest } from "next/server";
 
 interface Props {
-  params: {
-    game_id: string;
-  };
+  params: Promise<{ game_id: string }>;
 }
 
 export async function GET(req: NextRequest, { params }: Props) {

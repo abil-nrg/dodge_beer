@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { gameSaveClickedHandler } from "@backend/controllers/GameObjectController";
 
 interface Props {
-  params: {
-    game_id: string;
-  };
+  params: Promise<{ game_id: string }>;
 }
 
 /**
