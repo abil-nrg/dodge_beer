@@ -43,6 +43,7 @@
   margin: 0;
   padding: 0;
 }
+
 html {
   box-sizing: border-box;
   font-family: 'Sansation', sans-serif;
@@ -54,9 +55,11 @@ body{
   color: var(--text-clr);
   display:grid;
   grid-template-columns: auto 1fr;
-  overflow: hidden;
 }
-
+html, body {
+  height: 100%;
+  overflow-y: auto;
+}
 /* small screens don't need sidebar */
 @media (max-width: 800px) {
 
