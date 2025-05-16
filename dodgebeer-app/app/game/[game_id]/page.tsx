@@ -20,7 +20,7 @@ export default function GamePage({
     let isMounted = true;
 
     async function getBothTeamsInfo() {
-      const response = await ApiClient.getBothTeamsInfoByGameId(game_id);
+      const response = await ApiClient.getBothTeamsInfoByGameIdRoute(game_id);
       const result =
         (await response.json()) as ApiResponse<GetBothTeamsResponse>;
       const data = result.data;
@@ -43,7 +43,7 @@ export default function GamePage({
   }
   return (
     <div>
-      <GameContainer team1={team1} team2={team2} />
+      <GameContainer gameId={game_id} team1={team1} team2={team2} />
     </div>
   );
 }

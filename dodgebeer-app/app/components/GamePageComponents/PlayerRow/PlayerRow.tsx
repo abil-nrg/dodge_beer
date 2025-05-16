@@ -6,11 +6,26 @@ import { useState } from "react";
 interface Props {
   player: PlayerObject;
   disabled?: boolean;
+  isDisableSave?: boolean;
+  onHitClick: (player_id: string, time?: number) => void;
+  onSaveClick: (player_id: string, time?: number) => void;
 }
-export default function PlayerRow({ player, disabled = false }: Props) {
-  async function handleHitClick() {}
+export default function PlayerRow({
+  player,
+  onHitClick,
+  onSaveClick,
+  disabled = false,
+  isDisableSave = false,
+}: Props) {
+  async function handleHitClick() {
+    const time = undefined; // TODO:
+    onHitClick(player.player_id, time);
+  }
 
-  async function handleSaveClick() {}
+  async function handleSaveClick() {
+    const time = undefined; // TODO:
+    onSaveClick(player.player_id, time);
+  }
 
   return (
     <div className={styles.playerRow} key={player.player_id}>
