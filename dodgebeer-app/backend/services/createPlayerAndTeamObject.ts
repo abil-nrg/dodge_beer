@@ -58,7 +58,7 @@ export function createPlayerObjectService({
 }: CreatePlayerInterface) {
   data.player_count += 1;
   const playerKey = `${MainDataConfig.PLAYER}${data.player_count}`;
-  console.log(body.player_photo);
+
   data.players[playerKey] = {
     name: body.player_name,
     photo: `${MainDataConfig.UPLOAD_FOLDER}/${body.player_photo || MainDataConfig.DEFAULT_PHOTO}`,
