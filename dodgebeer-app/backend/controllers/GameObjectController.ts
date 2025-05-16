@@ -1,13 +1,26 @@
-import { CreateGameRequest, CreateGameResponse } from "@/types/game-api";
+import {
+  CreateGameRequest,
+  CreateGameResponse,
+  UpdateGameResponse,
+} from "@/types/game-api";
 import {
   DATA_FILE,
   overwriteFile,
   readMainDataFile,
 } from "@backend/services/readFile";
-import { createGameObjectService } from "@backend/services/createGameObject";
+import {
+  createGameObjectService,
+  overWriteGameFile,
+} from "@backend/services/createGameObject";
 import { ApiSuccess } from "@/types/api";
 import { GetBothTeamsResponse } from "@/types/team";
 import { getTeamAndPlayersByGameId } from "@backend/services/gameUtil";
+import {
+  getGameState,
+  handleHit,
+  handleSave,
+} from "@backend/services/gameLogic";
+import { Mutex } from "async-mutex";
 
 export async function createGameHandler(body: CreateGameRequest) {
   const mainData = readMainDataFile();
@@ -29,4 +42,44 @@ export async function createGameHandler(body: CreateGameRequest) {
 export async function getTeamInfoForGameHandler(gameId: string) {
   const body = getTeamAndPlayersByGameId(gameId);
   return ApiSuccess<GetBothTeamsResponse>(body);
+}
+
+export async function gameHitClickedHandler(
+  gameId: string,
+  teamId: string,
+  playerId: string,
+  time?: number,
+) {
+  try {
+    const game = handleHit(gameId, teamId, playerId, time);
+    overWriteGameFile(gameId, game);
+  } catch (error) {
+    console.error("Error!\n", error);
+  }
+  return ApiSuccess<null>(null);
+}
+
+export async function gameSaveClickedHandler(
+  gameId: string,
+  teamId: string,
+  playerId: string,
+  time?: number,
+) {
+  try {
+    const game = handleSave(gameId, teamId, playerId, time);
+    overWriteGameFile(gameId, game);
+  } catch (error) {
+    console.error("Error!\n", error);
+  }
+  return ApiSuccess<null>(null);
+}
+
+export async function getGameStatusHandler(gameId: string) {
+  try {
+    const gameState = getGameState(gameId);
+    return ApiSuccess<UpdateGameResponse>(gameState);
+  } catch (error) {
+    console.error("Error!\n", error);
+    return ApiSuccess<null>(null);
+  }
 }

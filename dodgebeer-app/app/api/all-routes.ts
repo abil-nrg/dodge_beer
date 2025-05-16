@@ -35,12 +35,15 @@ const API_ROUTE = {
 
   //GAME ROUTES
   CREATE_GAME: `${GAME_DATA_API}/create-game`,
-  GET_TEAMS_INFO_PATH: "get-teams-info",
+  GET_TEAMS_INFO_PATH: "/get-teams-info",
+  GAME_PLAYER_HIT_PATH: "/player-hit",
+  GAME_PLAYER_SAVE_PATH: "/player-save",
+  GAME_GET_STATUS: "/get-game-status",
 };
 
 interface AddQueryParamToUrnProps {
   base: string;
-  params: Record<string, string>;
+  params: Record<string, string | number | undefined>;
 }
 
 const JSON_HEADER = {
@@ -58,9 +61,13 @@ export class ApiClient {
         : "http://localhost";
 
     const url = new URL(base, origin);
+
     Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.append(key, value);
+      if (value !== undefined) {
+        url.searchParams.append(key, String(value));
+      }
     });
+
     return url.toString();
   }
 
@@ -174,9 +181,48 @@ export class ApiClient {
     return `${GAME_DATA_API}/${gameId}`;
   }
 
-  static getBothTeamsInfoByGameId(gameId: string) {
+  static getBothTeamsInfoByGameIdRoute(gameId: string) {
     const path =
-      ApiClient.getGamePagePath(gameId) + "/" + API_ROUTE.GET_TEAMS_INFO_PATH;
+      ApiClient.getGamePagePath(gameId) + API_ROUTE.GET_TEAMS_INFO_PATH;
+    return fetch(path, { method: "GET" });
+  }
+
+  static playerHitInGameRoute(
+    gameId: string,
+    team_id: string,
+    player_id: string,
+    time?: number,
+  ) {
+    const path =
+      ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_PLAYER_HIT_PATH;
+
+    const url = this.#AddQueryParamToUrn({
+      base: path,
+      params: { team_id, player_id, time },
+    });
+
+    return fetch(url, { method: "GET" });
+  }
+  static playerSaveInGameRoute(
+    gameId: string,
+    team_id: string,
+    player_id: string,
+    time?: number,
+  ) {
+    const path =
+      ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_PLAYER_SAVE_PATH;
+
+    const url = this.#AddQueryParamToUrn({
+      base: path,
+      params: { team_id, player_id, time },
+    });
+
+    return fetch(url, { method: "GET" });
+  }
+
+  static getGameStatusRoute(gameId: string) {
+    const path = ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_GET_STATUS;
+
     return fetch(path, { method: "GET" });
   }
 }

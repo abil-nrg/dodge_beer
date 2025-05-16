@@ -107,6 +107,24 @@ export function addActionToPlayer({
 }
 
 /** -------------------------------------------- **/
+export function setTeamToAttack(
+  round: Round,
+  sides: GetTeamKeyByTeamIdReturnType,
+) {
+  round[sides.curSide].side = "ATTACK";
+  round[sides.oppositeSide].side = "DEFENCE";
+  return round;
+}
+/** -------------------------------------------- **/
+export function setTeamToDefence(
+  round: Round,
+  sides: GetTeamKeyByTeamIdReturnType,
+) {
+  round[sides.curSide].side = "DEFENCE";
+  round[sides.oppositeSide].side = "ATTACK";
+  return round;
+}
+/** -------------------------------------------- **/
 
 export function flipTeamSides(round: Round): Round {
   const curSide = round.team1_id.side;
@@ -132,7 +150,7 @@ interface GetTeamKeyByTeamIdProps {
   };
   inputTeamId: string;
 }
-interface GetTeamKeyByTeamIdReturnType {
+export interface GetTeamKeyByTeamIdReturnType {
   curSide: TeamKeys;
   oppositeSide: TeamKeys;
 }

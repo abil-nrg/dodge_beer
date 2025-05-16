@@ -34,7 +34,6 @@ export interface GameData {
   status: GameStatus;
   team1_id: string;
   team2_id: string;
-  round_counter: number;
   rounds: Round[];
 }
 
