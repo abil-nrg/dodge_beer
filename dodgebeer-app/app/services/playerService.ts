@@ -9,7 +9,7 @@ import {
   GetPlayerByIdResponse,
   GetPlayerNotInTeamResponse,
 } from "@/types/player";
-import { normalizeApiResponse } from "@/app/util/readAndNormalizeApiResponseType";
+import { normalizeApiResponse } from "@/app/util/read-and-normalize-api-response-type";
 import { MainDataConfig, Player } from "@/types/main-data";
 
 /** Fetch all player data for given IDs. Returns a map of ID → Player.

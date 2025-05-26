@@ -3,7 +3,7 @@
 // types
 import { Player } from "@/types/main-data";
 // styles & icons
-import styles from "@/app/components/TeamCard/TeamCard.module.css";
+import styles from "@/app/components/TeamPageComponents/TeamCard/TeamCard.module.css";
 import { IoIosRemoveCircleOutline } from "react-icons/io";
 
 /**

@@ -8,7 +8,7 @@ import {
   CreateTeamResponse,
   DeleteTeamOrPlayerResponse,
 } from "@/types/team";
-import { normalizeApiResponse } from "@/app/util/readAndNormalizeApiResponseType";
+import { normalizeApiResponse } from "@/app/util/read-and-normalize-api-response-type";
 
 //-----------------------------------------------------------------------------//
 /** Remove a player from a team and return updated player list or error string.

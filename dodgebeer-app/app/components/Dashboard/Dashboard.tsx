@@ -3,7 +3,7 @@
 import styles from "./Dashboard.module.css";
 import Button from "@/app/components/ui/DashboardButton/Button";
 import React, { useState } from "react";
-import CreateGameModal from "@/app/components/DashboardPageComponents/CreateGameModal/CreateGameModal";
+import CreateGameModal from "@/app/components/Dashboard/CreateGameModal/CreateGameModal";
 import { createNewGameService } from "@/app/services/gameService";
 import { useRouter } from "next/navigation";
 

@@ -10,7 +10,7 @@ import { MdDelete } from "react-icons/md";
 import { useEffect, useState } from "react";
 
 // types
-import { MainDataConfig, Player } from "@/types/main-data";
+import { MainDataConfig, Player } from "@types/main-data";
 
 // util & util components
 import { deleteObjectConfirmationBox } from "@/app/util/confirmation-box";
@@ -22,9 +22,9 @@ import {
   deleteTeamService,
   removePlayerFromTeam,
 } from "@/app/services/teamService";
-import PlayerRowInTeamCard from "@/app/components/TeamCard/TeamCardElements/PlayerRowInTeamCard/PlayerRowInTeamCard";
-import AddPlayerToTeamCardButton from "@/app/components/TeamCard/TeamCardElements/AddPlayerToTeamCardButton/AddPlayerToTeamCardButton";
-import AddPlayerToTeamCardModal from "@/app/components/TeamCard/TeamCardElements/AddPlayerToTeamCardModal/AddPlayerToTeamCardModal";
+import PlayerRowInTeamCard from "@/app/components/TeamPageComponents/TeamCard/TeamCardElements/PlayerRowInTeamCard/PlayerRowInTeamCard";
+import AddPlayerToTeamCardButton from "@/app/components/TeamPageComponents/TeamCard/TeamCardElements/AddPlayerToTeamCardButton/AddPlayerToTeamCardButton";
+import AddPlayerToTeamCardModal from "@/app/components/TeamPageComponents/TeamCard/TeamCardElements/AddPlayerToTeamCardModal/AddPlayerToTeamCardModal";
 import { getPlayersMapFromIds } from "@/app/services/playerService";
 
 //-----------------------------------------------------------------------------//
