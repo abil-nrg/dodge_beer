@@ -10,7 +10,7 @@ import { MdDelete } from "react-icons/md";
 import { useEffect, useState } from "react";
 
 // types
-import { MainDataConfig, Player } from "@types/main-data";
+import { MainDataConfig, Player } from "@/types/main-data";
 
 // util & util components
 import { deleteObjectConfirmationBox } from "@/app/util/confirmation-box";

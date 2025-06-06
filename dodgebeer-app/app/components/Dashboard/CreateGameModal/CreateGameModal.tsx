@@ -2,8 +2,8 @@ import BaseModal from "@/app/components/BaseModal/BaseModal";
 import ModalSelect from "@/app/components/ui/ModalSelect/ModalSelect";
 import { useEffect, useState } from "react";
 import { ApiClient } from "@/app/api/all-routes";
-import { ApiResponse, ResponseWithErrorInData } from "@types/api";
-import { GetAllTeamsResponse } from "@types/team";
+import { ApiResponse, ResponseWithErrorInData } from "@/types/api";
+import { GetAllTeamsResponse } from "@/types/team";
 import ModalButton from "@/app/components/ui/ModalButton/ModalButton";
 import styles from "./CreateGameModal.module.css";
 

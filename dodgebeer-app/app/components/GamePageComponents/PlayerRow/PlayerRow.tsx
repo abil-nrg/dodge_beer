@@ -3,6 +3,7 @@ import { PlayerObject } from "@/types/player";
 import Button from "@/app/components/ui/DashboardButton/Button";
 import { useState } from "react";
 import { IoIosRemoveCircleOutline } from "react-icons/io";
+import Image from "next/image";
 
 interface Props {
   player: PlayerObject;
@@ -21,8 +22,7 @@ export default function PlayerRow({
 }: Props) {
   const [disabled, setDisabled] = useState<boolean>(false);
   async function handleHitClick() {
-    const time = undefined; // TODO:
-    onHitClick(player.player_id, time);
+    onHitClick(player.player_id);
   }
 
   async function handleSaveClick() {
@@ -38,7 +38,7 @@ export default function PlayerRow({
   return (
     <div className={styles.playerRow} key={player.player_id}>
       <img
-        src={player.player_photo}
+        src={`/api${player?.player_photo}`}
         alt={player.player_name}
         className={styles.playerImage}
       />

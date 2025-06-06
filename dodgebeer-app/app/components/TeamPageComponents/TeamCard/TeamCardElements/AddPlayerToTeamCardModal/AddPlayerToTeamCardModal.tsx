@@ -2,7 +2,7 @@ import styles from "./AddPlayerToTeamCardModal.module.css";
 import { useEffect, useState } from "react";
 import ModalButton from "@/app/components/ui/ModalButton/ModalButton";
 import { fetchAllAvailablePlayers } from "@/app/services/playerService";
-import { PlayerWithId } from "@types/player";
+import { PlayerWithId } from "@/types/player";
 import type { toast as customToast } from "@/app/util/toast-alert-config";
 import BaseModal from "@/app/components/BaseModal/BaseModal";
 import ModalSelect from "@/app/components/ui/ModalSelect/ModalSelect";
