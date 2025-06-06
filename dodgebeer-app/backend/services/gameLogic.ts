@@ -62,55 +62,42 @@ export function handleHit(
 
   const lastIndex = rounds.length - 1;
   const lastRound = getLastRound(rounds);
+  const teamSideInLastRound = lastRound[actionTeamKey.curSide].side;
 
-  const needsNewRound =
-    playerId in lastRound[actionTeamKey.curSide].players ||
-    lastRound[actionTeamKey.curSide].side === "DEFENCE";
-
-  lastRound[actionTeamKey.curSide].side === "ATTACK";
-
-  if (needsNewRound) {
-    const roundsToAdd: Round[] = [];
-    // last round is defence
-    if (lastRound[actionTeamKey.curSide].side === "DEFENCE") {
-      const player_len = 3; // TODO: hardcoded for now
-      const attackedPlayers = lastRound[actionTeamKey.oppositeSide].players;
-      const isBallsBack = Object.keys(attackedPlayers).length === player_len;
-
-      if (isBallsBack) {
-        roundsToAdd.push(getEmptyRound()); // add empty round if needed
-      }
-    }
-
+  // check if player was in Defence last round
+  // otherwise player was in Attack, but it could be balls back
+  // or player hasn't hit yet
+  if (
+    teamSideInLastRound === "DEFENCE" ||
+    (teamSideInLastRound === "ATTACK" &&
+      playerId in lastRound[actionTeamKey.curSide].players)
+  ) {
     const newRound = addActionToPlayer({
-      round: getEmptyRound(),
+      round: setTeamToAttack(getEmptyRound(), actionTeamKey),
       player_id: playerId,
       action: "HIT",
       time,
       teamKey: actionTeamKey.curSide,
     });
 
-    const attackRound = setTeamToAttack(newRound, actionTeamKey);
-    const finalRound = cleanUpRoundActions(attackRound);
-    roundsToAdd.push(finalRound); // always add the new round
+    const finalRound = cleanUpRoundActions(newRound);
 
     return {
       ...game,
-      rounds: [...rounds, ...roundsToAdd],
+      rounds: [...rounds, finalRound],
     } as GameData;
   }
-
+  // player's team is in attack, and they just hit
   const updatedRound = addActionToPlayer({
-    round: lastRound,
+    round: setTeamToAttack(lastRound, actionTeamKey),
     player_id: playerId,
     action: "HIT",
     time,
     teamKey: actionTeamKey.curSide,
   });
 
-  const attackUpdatedRound = setTeamToAttack(updatedRound, actionTeamKey);
   // delete all extra hits if happened:
-  const finalRound = cleanUpRoundActions(attackUpdatedRound);
+  const finalRound = cleanUpRoundActions(updatedRound);
   // update
   const updatedRounds = [...rounds];
   updatedRounds[lastIndex] = finalRound;
