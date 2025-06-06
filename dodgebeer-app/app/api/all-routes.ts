@@ -41,6 +41,7 @@ const API_ROUTE = {
   GAME_GET_STATUS: "/get-game-status",
   GAME_ADD_PLAYER_DONE: "/add-player-done",
   GAME_PLAYERS_STATS: "/get-players-stats",
+  GAME_ALL_PLAYERS_MISSED: "/players-missed",
 };
 
 interface AddQueryParamToUrnProps {
@@ -213,12 +214,10 @@ export class ApiClient {
   ) {
     const path =
       ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_PLAYER_SAVE_PATH;
-
     const url = this.#AddQueryParamToUrn({
       base: path,
       params: { team_id, player_id, time },
     });
-
     return fetch(url, { method: "GET" });
   }
 
@@ -245,5 +244,17 @@ export class ApiClient {
       ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_PLAYERS_STATS;
 
     return fetch(path, { method: "GET" });
+  }
+
+  static allPlayersMissedRoute(gameId: string, team_id: string) {
+    const path =
+      ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_ALL_PLAYERS_MISSED;
+
+    const url = this.#AddQueryParamToUrn({
+      base: path,
+      params: { team_id },
+    });
+
+    return fetch(url, { method: "GET" });
   }
 }

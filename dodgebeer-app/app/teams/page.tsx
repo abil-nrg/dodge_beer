@@ -15,7 +15,7 @@ import styles from "@/app/teams/page.module.css";
 import { createTeam } from "@/app/services/teamService";
 import { ApiClient } from "@/app/api/all-routes";
 // components
-import TeamCardContainer from "@/app/components/TeamCard/TeamCardContainer";
+import TeamCardContainer from "@/app/components/TeamPageComponents/TeamCard/TeamCardContainer";
 import AddNewTeamModal from "@/app/components/TeamPageComponents/AddNewTeamModal/AddNewTeamModal";
 // types
 import { ApiResponse, ResponseWithErrorInData } from "@/types/api";

@@ -37,7 +37,13 @@ export default function PlayerCard({ id, name, photo, onPlayerDelete }: Props) {
       <button className={styles.deletePlayerCard} onClick={deletePlayer}>
         <MdDelete />
       </button>
-      <Image src={`${photo}`} alt={name} width={200} height={200} priority />
+      <Image
+        src={`/api${photo}`}
+        alt={name}
+        width={200}
+        height={200}
+        priority
+      />
       <h2>{name}</h2>
     </div>
   );

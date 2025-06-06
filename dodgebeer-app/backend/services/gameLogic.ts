@@ -24,43 +24,18 @@ function isSubset<T>(array1: T[], array2: T[]): boolean {
   return array1.every((item) => array2.includes(item));
 }
 
-function handleFirstEverAction(
-  actionTeamKey: GetTeamKeyByTeamIdReturnType,
-  playerId: string,
-  time?: number,
-): Round[] {
-  const emptyRound = getEmptyRound();
+function handleFirstEverAction(playerId: string, time?: number): Round[] {
+  // TEAM1 starts the game with a HIT
+  const round = addActionToPlayer({
+    round: getEmptyRound(),
+    player_id: playerId,
+    action: "HIT",
+    time,
+    teamKey: GameConfig.TEAM1_KEY,
+  });
 
-  if (actionTeamKey.curSide === GameConfig.TEAM1_KEY) {
-    // TEAM1 starts the game with a HIT
-    const round = addActionToPlayer({
-      round: emptyRound,
-      player_id: playerId,
-      action: "HIT",
-      time,
-      teamKey: GameConfig.TEAM1_KEY,
-    });
-
-    const finalRound = cleanUpRoundActions(round);
-    return [finalRound];
-  } else {
-    // TEAM2 scored first, meaning TEAM1 missed everything
-    const missedRound = getEmptyRound();
-    const t2Round = addActionToPlayer({
-      round: getEmptyRound(),
-      player_id: playerId,
-      action: "HIT",
-      time,
-      teamKey: GameConfig.TEAM2_KEY,
-    });
-    const t2AttackRound = setTeamToAttack(t2Round, {
-      curSide: GameConfig.TEAM2_KEY,
-      oppositeSide: GameConfig.TEAM1_KEY,
-    });
-
-    const finalRound = cleanUpRoundActions(t2AttackRound);
-    return [missedRound, finalRound];
-  }
+  const finalRound = cleanUpRoundActions(round);
+  return [finalRound];
 }
 
 export function handleHit(
@@ -81,59 +56,48 @@ export function handleHit(
     return {
       ...game,
       status: "IN_PROGRESS",
-      rounds: handleFirstEverAction(actionTeamKey, playerId, time),
+      rounds: handleFirstEverAction(playerId, time),
     } as GameData;
   }
 
   const lastIndex = rounds.length - 1;
   const lastRound = getLastRound(rounds);
+  const teamSideInLastRound = lastRound[actionTeamKey.curSide].side;
 
-  const needsNewRound =
-    playerId in lastRound[actionTeamKey.curSide].players ||
-    lastRound[actionTeamKey.curSide].side === "DEFENCE";
-
-  if (needsNewRound) {
-    const roundsToAdd: Round[] = [];
-
-    if (lastRound[actionTeamKey.curSide].side === "DEFENCE") {
-      const player_len = 3; // TODO: hardcoded for now
-      const attackedPlayers = lastRound[actionTeamKey.oppositeSide].players;
-      const isBallsBack = Object.keys(attackedPlayers).length === player_len;
-
-      if (isBallsBack) {
-        roundsToAdd.push(getEmptyRound()); // add empty round if needed
-      }
-    }
-
+  // check if player was in Defence last round
+  // otherwise player was in Attack, but it could be balls back
+  // or player hasn't hit yet
+  if (
+    teamSideInLastRound === "DEFENCE" ||
+    (teamSideInLastRound === "ATTACK" &&
+      playerId in lastRound[actionTeamKey.curSide].players)
+  ) {
     const newRound = addActionToPlayer({
-      round: getEmptyRound(),
+      round: setTeamToAttack(getEmptyRound(), actionTeamKey),
       player_id: playerId,
       action: "HIT",
       time,
       teamKey: actionTeamKey.curSide,
     });
 
-    const attackRound = setTeamToAttack(newRound, actionTeamKey);
-    const finalRound = cleanUpRoundActions(attackRound);
-    roundsToAdd.push(finalRound); // always add the new round
+    const finalRound = cleanUpRoundActions(newRound);
 
     return {
       ...game,
-      rounds: [...rounds, ...roundsToAdd],
+      rounds: [...rounds, finalRound],
     } as GameData;
   }
-
+  // player's team is in attack, and they just hit
   const updatedRound = addActionToPlayer({
-    round: lastRound,
+    round: setTeamToAttack(lastRound, actionTeamKey),
     player_id: playerId,
     action: "HIT",
     time,
     teamKey: actionTeamKey.curSide,
   });
 
-  const attackUpdatedRound = setTeamToAttack(updatedRound, actionTeamKey);
   // delete all extra hits if happened:
-  const finalRound = cleanUpRoundActions(attackUpdatedRound);
+  const finalRound = cleanUpRoundActions(updatedRound);
   // update
   const updatedRounds = [...rounds];
   updatedRounds[lastIndex] = finalRound;
@@ -219,9 +183,30 @@ export function addPlayerDone(gameId: string, playerId: string) {
   } as GameData;
 }
 //------------------------------------
-export function skipRoundService(gameId: string) {
+export function handleAllPlayersMissed(gameId: string, teamId: string) {
   const game = readGameDataFile(gameId);
-  game.rounds = [...game.rounds, getEmptyRound()];
+  const { team1_id, team2_id, rounds, status } = game;
+
+  const round = getEmptyRound();
+  const actionTeamKey = getTeamKeyByTeamId({
+    data: { team1_id, team2_id },
+    inputTeamId: teamId,
+  });
+  // make team attack
+  round[actionTeamKey.curSide].side = GameConfig.ATTACK;
+  round[actionTeamKey.oppositeSide].side = GameConfig.DEFENCE;
+  // status
+  let newStatus = status;
+  if (isRoundsEmpty(rounds)) {
+    newStatus = "IN_PROGRESS";
+  }
+  //update
+  const updatedRounds = [...rounds, round];
+  return {
+    ...game,
+    rounds: updatedRounds,
+    status: newStatus,
+  } as GameData;
 }
 
 //------------------------------------

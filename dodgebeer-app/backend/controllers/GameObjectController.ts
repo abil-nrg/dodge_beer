@@ -19,6 +19,7 @@ import {
   addPlayerDone,
   getGameState,
   getPlayerStats,
+  handleAllPlayersMissed,
   handleHit,
   handleSave,
 } from "@backend/services/gameLogic";
@@ -56,7 +57,7 @@ export async function gameHitClickedHandler(
   const mutex = getGameLock(gameId);
   await mutex.runExclusive(async () => {
     const game = handleHit(gameId, teamId, playerId, time);
-    await overWriteGameFile(gameId, game);
+    overWriteGameFile(gameId, game);
   });
   return ApiSuccess<null>(null);
 }
@@ -70,7 +71,16 @@ export async function gameSaveClickedHandler(
   const mutex = getGameLock(gameId);
   await mutex.runExclusive(async () => {
     const game = handleSave(gameId, teamId, playerId, time);
-    await overWriteGameFile(gameId, game);
+    overWriteGameFile(gameId, game);
+  });
+  return ApiSuccess<null>(null);
+}
+
+export async function gameAllMissedHandler(gameId: string, teamId: string) {
+  const mutex = getGameLock(gameId);
+  await mutex.runExclusive(async () => {
+    const game = handleAllPlayersMissed(gameId, teamId);
+    overWriteGameFile(gameId, game);
   });
   return ApiSuccess<null>(null);
 }
@@ -79,7 +89,7 @@ export async function gamePlayerIsDone(gameId: string, playerId: string) {
   const mutex = getGameLock(gameId);
   await mutex.runExclusive(async () => {
     const game = addPlayerDone(gameId, playerId);
-    await overWriteGameFile(gameId, game);
+    overWriteGameFile(gameId, game);
   });
   return ApiSuccess<null>(null);
 }

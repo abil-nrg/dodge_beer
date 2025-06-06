@@ -3,8 +3,9 @@
 // types
 import { Player } from "@/types/main-data";
 // styles & icons
-import styles from "@/app/components/TeamCard/TeamCard.module.css";
+import styles from "@/app/components/TeamPageComponents/TeamCard/TeamCard.module.css";
 import { IoIosRemoveCircleOutline } from "react-icons/io";
+import Image from "next/image";
 
 /**
  * Props for PlayerRowInTeamCard component
@@ -37,7 +38,7 @@ export default function PlayerRowInTeamCard({
   return (
     <div className={styles.playerRow} key={playerId}>
       <img
-        src={player?.photo || defaultOptions.photo}
+        src={`/api${player?.photo}` || `/api${defaultOptions.photo}`}
         alt={player?.name || defaultOptions.name}
         className={styles.playerImage}
       />
