@@ -12,7 +12,7 @@ export async function uploadPlayerImage(file: File) {
   const buffer = Buffer.from(bytes);
 
   const filename = file.name;
-  const filePath = path.join(process.cwd(), "public", "uploads", filename);
+  const filePath = path.join(process.cwd(), "uploads", filename);
 
   await writeFile(filePath, buffer);
 

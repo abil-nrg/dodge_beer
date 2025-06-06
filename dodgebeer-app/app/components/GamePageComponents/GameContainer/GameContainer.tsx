@@ -7,7 +7,8 @@ import { PlayerStatsWithInfo, UpdateGameResponse } from "@/types/game-api";
 import { useEffect, useState } from "react";
 import { GameStatus } from "@/types/game-data";
 import { toast, ToastContainerCustom } from "@/app/util/toast-alert-config";
-
+import { GoGoal } from "react-icons/go";
+import { FaHandSparkles } from "react-icons/fa";
 interface Props {
   gameId: string;
   team1: FullTeamObject;
@@ -24,11 +25,15 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
   const [lastActionText, setLastActionText] = useState(
     "PLEASE START THE GAME NOW!",
   );
+  const [lastActionColor, setLastActionColor] = useState<"green" | "red" | "">(
+    "",
+  );
+  //game status
   const [gameStatus, setGameStatus] = useState<GameStatus>("IN_PROGRESS");
   const [playersStats, setPlayersStats] = useState<PlayerStatsWithInfo[]>([]);
-  // disabling buttons
-  const [team1DisableSave, setTeam1DisableSave] = useState(true);
-  const [team2DisableSave, setTeam2DisableSave] = useState(true);
+  // timers
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsed, setElapsed] = useState<number | null>(null);
 
   useEffect(() => {
     updateGameState(); // doesn't need to be async
@@ -85,25 +90,36 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
     player_id: string,
     time?: number,
   ) {
+    setStartTime(Date.now());
+    setElapsed(null); // reset
+    console.log("Hit Registered. Timer has started");
+
     await ApiClient.playerHitInGameRoute(gameId, team_id, player_id, time);
     await updateGameState();
 
     const info = findTeamNameAndPlayer(team_id, player_id);
     const text = `${info.player_name} from ${info.team_name} made a HIT!`;
     setLastActionText(text);
+    setLastActionColor("green");
   }
 
-  async function handlePlayerSave(
-    team_id: string,
-    player_id: string,
-    time?: number,
-  ) {
+  async function handlePlayerSave(team_id: string, player_id: string) {
+    let time = -1;
+    if (startTime !== null) {
+      const endTime = Date.now();
+      time = endTime - startTime;
+      setElapsed(time);
+      setStartTime(null);
+      console.log("Save Registered. Time took ", time, "ms");
+    }
+
     await ApiClient.playerSaveInGameRoute(gameId, team_id, player_id, time);
     await updateGameState();
 
     const info = findTeamNameAndPlayer(team_id, player_id);
     const text = `${info.player_name} from ${info.team_name} made a SAVE!`;
     setLastActionText(text);
+    setLastActionColor("red");
   }
 
   async function handleAllMissed(team_id: string) {
@@ -209,7 +225,18 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
       </div>
       {/* Last Action Text */}
       <div className={styles["last-action-container"]}>
-        <p className={styles["last-action-text"]}>{lastActionText}</p>
+        <p className={styles["last-action-text"]}>
+          {lastActionText}
+          <span>
+            {lastActionColor === "green" ? (
+              <GoGoal style={{ color: "green", paddingLeft: "5px" }} />
+            ) : lastActionColor === "red" ? (
+              <FaHandSparkles style={{ color: "red", paddingLeft: "5px" }} />
+            ) : (
+              ""
+            )}
+          </span>
+        </p>
       </div>
     </>
   );

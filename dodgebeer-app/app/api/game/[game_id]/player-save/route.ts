@@ -11,7 +11,6 @@ interface Props {
  */
 export async function GET(req: NextRequest, { params }: Props) {
   const { game_id } = await params;
-
   const searchParams = req.nextUrl.searchParams;
   const team_id = searchParams.get("team_id");
   const player_id = searchParams.get("player_id");

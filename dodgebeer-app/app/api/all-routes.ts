@@ -214,12 +214,10 @@ export class ApiClient {
   ) {
     const path =
       ApiClient.getGamePagePath(gameId) + API_ROUTE.GAME_PLAYER_SAVE_PATH;
-
     const url = this.#AddQueryParamToUrn({
       base: path,
       params: { team_id, player_id, time },
     });
-
     return fetch(url, { method: "GET" });
   }
 
