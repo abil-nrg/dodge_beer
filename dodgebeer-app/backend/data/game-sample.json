@@ -1,0 +1,265 @@
+{
+  "status": "DONE",
+  "team1_id": "team1",
+  "team2_id": "team2",
+  "rounds": [
+    {
+      "team1_id": {
+        "side": "ATTACK",
+        "players": {
+          "player1": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ]
+        }
+      },
+      "team2_id": {
+        "side": "DEFENCE",
+        "players": {
+          "player4": [
+            {
+              "action": "SAVE",
+              "time": 4414
+            }
+          ]
+        }
+      },
+      "players_done": []
+    },
+    {
+      "team1_id": {
+        "side": "DEFENCE",
+        "players": {
+          "player1": [
+            {
+              "action": "SAVE",
+              "time": 1576
+            },
+            {
+              "action": "SAVE",
+              "time": 678
+            },
+            {
+              "action": "SAVE",
+              "time": 523
+            }
+          ]
+        }
+      },
+      "team2_id": {
+        "side": "ATTACK",
+        "players": {
+          "player4": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ],
+          "player5": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ],
+          "player6": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ]
+        }
+      },
+      "players_done": []
+    },
+    {
+      "team1_id": {
+        "side": "DEFENCE",
+        "players": {
+          "player2": [
+            {
+              "action": "SAVE",
+              "time": 1702
+            }
+          ]
+        }
+      },
+      "team2_id": {
+        "side": "ATTACK",
+        "players": {
+          "player5": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ]
+        }
+      },
+      "players_done": []
+    },
+    {
+      "team1_id": {
+        "side": "ATTACK",
+        "players": {
+          "player1": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ],
+          "player2": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ]
+        }
+      },
+      "team2_id": {
+        "side": "DEFENCE",
+        "players": {
+          "player4": [
+            {
+              "action": "SAVE",
+              "time": 969
+            }
+          ],
+          "player5": [
+            {
+              "action": "SAVE",
+              "time": 1092
+            }
+          ]
+        }
+      },
+      "players_done": []
+    },
+    {
+      "team1_id": {
+        "side": "DEFENCE",
+        "players": {}
+      },
+      "team2_id": {
+        "side": "ATTACK",
+        "players": {}
+      },
+      "players_done": []
+    },
+    {
+      "team1_id": {
+        "side": "ATTACK",
+        "players": {}
+      },
+      "team2_id": {
+        "side": "DEFENCE",
+        "players": {}
+      },
+      "players_done": []
+    },
+    {
+      "team1_id": {
+        "side": "DEFENCE",
+        "players": {
+          "player1": [
+            {
+              "action": "SAVE",
+              "time": 765
+            }
+          ],
+          "player2": [
+            {
+              "action": "SAVE",
+              "time": 1347
+            }
+          ]
+        }
+      },
+      "team2_id": {
+        "side": "ATTACK",
+        "players": {
+          "player4": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ],
+          "player5": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ]
+        }
+      },
+      "players_done": [
+        "player5"
+      ]
+    },
+    {
+      "team1_id": {
+        "side": "ATTACK",
+        "players": {
+          "player3": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ]
+        }
+      },
+      "team2_id": {
+        "side": "DEFENCE",
+        "players": {
+          "player6": [
+            {
+              "action": "SAVE",
+              "time": 912
+            }
+          ]
+        }
+      },
+      "players_done": [
+        "player3"
+      ]
+    },
+    {
+      "team1_id": {
+        "side": "DEFENCE",
+        "players": {
+          "player1": [
+            {
+              "action": "SAVE",
+              "time": 684
+            },
+            {
+              "action": "SAVE",
+              "time": 777
+            }
+          ]
+        }
+      },
+      "team2_id": {
+        "side": "ATTACK",
+        "players": {
+          "player4": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ],
+          "player6": [
+            {
+              "action": "HIT",
+              "time": -1
+            }
+          ]
+        }
+      },
+      "players_done": [
+        "player4",
+        "player6"
+      ]
+    }
+  ]
+}
