@@ -24,13 +24,17 @@ def compute_global_stats(games):
     successful_hits = defaultdict(int)
     save_counts = defaultdict(int)
     fastest_save = defaultdict(lambda: float('inf'))
-    first_appearance = {}  # player_id -> first round index
+    first_appearance = {}
 
     for game in games:
+        players_done_so_far = set()
+
         for round_idx, round_data in enumerate(game['rounds']):
             for player in round_data.get('players_done', []):
                 if player not in first_appearance:
                     first_appearance[player] = round_idx
+
+            players_done_this_round = set(round_data.get('players_done', []))
 
             for team_key in ['team1_id', 'team2_id']:
                 team = round_data[team_key]
@@ -38,12 +42,14 @@ def compute_global_stats(games):
                 players = team.get('players', {})
 
                 if side == 'ATTACK':
-                    for player, actions in players.items():
-                        for action in actions:
-                            if action['action'] == 'HIT':
-                                hit_attempts[player] += 1
-                                if player in round_data.get('players_done', []):
-                                    successful_hits[player] += 1
+                    for player in players:
+                        # was here before, need to REFACTOR
+                        if player not in players_done_so_far:
+                            hit_attempts[player] += 1
+                    # +1 to those who hit, gj!
+                    for player in players_done_this_round:
+                        if player in players:
+                            successful_hits[player] += 1
 
                 elif side == 'DEFENCE':
                     for player, actions in players.items():
@@ -52,7 +58,10 @@ def compute_global_stats(games):
                                 save_counts[player] += 1
                                 fastest_save[player] = min(fastest_save[player], action['time'])
 
-    # Replace infinities with None
+            # Ukeep track of who is done
+            players_done_so_far.update(players_done_this_round)
+
+    # fix NaNs
     for player in fastest_save:
         if fastest_save[player] == float('inf'):
             fastest_save[player] = None
@@ -60,22 +69,31 @@ def compute_global_stats(games):
     return hit_attempts, successful_hits, save_counts, fastest_save, first_appearance
 
 
+
 def build_player_stats_table(hit_attempts, successful_hits, save_counts, fastest_save, first_appearance, player_names):
     all_players = set(hit_attempts) | set(successful_hits) | set(save_counts) | set(fastest_save) | set(first_appearance)
     table = []
 
+    # get the max turn 
+    max_turn = max(first_appearance.values()) if first_appearance else 0
+
     for player_id in sorted(all_players):
         player_name = player_names.get(player_id, player_id)
-        attempts = hit_attempts.get(player_id, 0)
+
+        # replace hit attempts
+        attempts = first_appearance.get(player_id, max_turn)
         successful = successful_hits.get(player_id, 0)
+        
+        #get the hit %
         hit_pct = (successful / attempts * 100) if attempts > 0 else None
+        
         saves = save_counts.get(player_id, 0)
         fast_save = fastest_save.get(player_id)
         first_turn = first_appearance.get(player_id)
 
         table.append({
             'Player': player_name,
-            'HIT Attempts': attempts,
+            'HIT Attempts (First Turn Done)': attempts,
             'Successful HITs': successful,
             'HIT %': round(hit_pct, 2) if hit_pct is not None else "N/A",
             'SAVE Count': saves,
