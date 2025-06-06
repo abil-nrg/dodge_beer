@@ -109,7 +109,13 @@ export function cleanUpRoundActions(round: Round): Round {
 
   return cleanedRound;
 }
-
+/** -------------------------------------------- **/
+export function didAnyActionHappen(round: Round) {
+  return (
+    Object.keys(round.team1_id.players).length === 0 &&
+    Object.keys(round.team2_id.players).length === 0
+  );
+}
 /** -------------------------------------------- **/
 export function getLastRound(rounds: Round[]) {
   const len = rounds.length;

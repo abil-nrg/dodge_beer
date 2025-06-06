@@ -7,11 +7,13 @@ import { PlayerStatsWithInfo, UpdateGameResponse } from "@/types/game-api";
 import { useEffect, useState } from "react";
 import { GameStatus } from "@/types/game-data";
 import { toast, ToastContainerCustom } from "@/app/util/toast-alert-config";
+
 interface Props {
   gameId: string;
   team1: FullTeamObject;
   team2: FullTeamObject;
 }
+
 export default function GameContainer({ gameId, team1, team2 }: Props) {
   // round counter
   const [roundCounter, setRoundCounter] = useState(0);
@@ -104,6 +106,11 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
     setLastActionText(text);
   }
 
+  async function handleAllMissed(team_id: string) {
+    await ApiClient.allPlayersMissedRoute(gameId, team_id);
+    await updateGameState();
+  }
+
   async function getPlayerStats() {
     const resp = await ApiClient.getPlayerStatsRoute(gameId);
     const result = (await resp.json()) as ApiResponse<{
@@ -176,6 +183,12 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
               onPlayerSave={handlePlayerSave}
               onPlayerDone={handlePlayerDone}
             />
+            <button
+              className={styles["all-missed"]}
+              onClick={() => handleAllMissed(team1.team.team_id)}
+            >
+              All Missed!
+            </button>
           </div>
           <div className={styles["team-section"]}>
             <div className={styles["team-side-label"]}>{team2Side}</div>
@@ -185,6 +198,12 @@ export default function GameContainer({ gameId, team1, team2 }: Props) {
               onPlayerSave={handlePlayerSave}
               onPlayerDone={handlePlayerDone}
             />
+            <button
+              className={styles["all-missed"]}
+              onClick={() => handleAllMissed(team2.team.team_id)}
+            >
+              All Missed!
+            </button>
           </div>
         </div>
       </div>

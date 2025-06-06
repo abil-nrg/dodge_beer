@@ -24,43 +24,18 @@ function isSubset<T>(array1: T[], array2: T[]): boolean {
   return array1.every((item) => array2.includes(item));
 }
 
-function handleFirstEverAction(
-  actionTeamKey: GetTeamKeyByTeamIdReturnType,
-  playerId: string,
-  time?: number,
-): Round[] {
-  const emptyRound = getEmptyRound();
+function handleFirstEverAction(playerId: string, time?: number): Round[] {
+  // TEAM1 starts the game with a HIT
+  const round = addActionToPlayer({
+    round: getEmptyRound(),
+    player_id: playerId,
+    action: "HIT",
+    time,
+    teamKey: GameConfig.TEAM1_KEY,
+  });
 
-  if (actionTeamKey.curSide === GameConfig.TEAM1_KEY) {
-    // TEAM1 starts the game with a HIT
-    const round = addActionToPlayer({
-      round: emptyRound,
-      player_id: playerId,
-      action: "HIT",
-      time,
-      teamKey: GameConfig.TEAM1_KEY,
-    });
-
-    const finalRound = cleanUpRoundActions(round);
-    return [finalRound];
-  } else {
-    // TEAM2 scored first, meaning TEAM1 missed everything
-    const missedRound = getEmptyRound();
-    const t2Round = addActionToPlayer({
-      round: getEmptyRound(),
-      player_id: playerId,
-      action: "HIT",
-      time,
-      teamKey: GameConfig.TEAM2_KEY,
-    });
-    const t2AttackRound = setTeamToAttack(t2Round, {
-      curSide: GameConfig.TEAM2_KEY,
-      oppositeSide: GameConfig.TEAM1_KEY,
-    });
-
-    const finalRound = cleanUpRoundActions(t2AttackRound);
-    return [missedRound, finalRound];
-  }
+  const finalRound = cleanUpRoundActions(round);
+  return [finalRound];
 }
 
 export function handleHit(
@@ -81,7 +56,7 @@ export function handleHit(
     return {
       ...game,
       status: "IN_PROGRESS",
-      rounds: handleFirstEverAction(actionTeamKey, playerId, time),
+      rounds: handleFirstEverAction(playerId, time),
     } as GameData;
   }
 
@@ -92,9 +67,11 @@ export function handleHit(
     playerId in lastRound[actionTeamKey.curSide].players ||
     lastRound[actionTeamKey.curSide].side === "DEFENCE";
 
+  lastRound[actionTeamKey.curSide].side === "ATTACK";
+
   if (needsNewRound) {
     const roundsToAdd: Round[] = [];
-
+    // last round is defence
     if (lastRound[actionTeamKey.curSide].side === "DEFENCE") {
       const player_len = 3; // TODO: hardcoded for now
       const attackedPlayers = lastRound[actionTeamKey.oppositeSide].players;
@@ -219,9 +196,30 @@ export function addPlayerDone(gameId: string, playerId: string) {
   } as GameData;
 }
 //------------------------------------
-export function skipRoundService(gameId: string) {
+export function handleAllPlayersMissed(gameId: string, teamId: string) {
   const game = readGameDataFile(gameId);
-  game.rounds = [...game.rounds, getEmptyRound()];
+  const { team1_id, team2_id, rounds, status } = game;
+
+  const round = getEmptyRound();
+  const actionTeamKey = getTeamKeyByTeamId({
+    data: { team1_id, team2_id },
+    inputTeamId: teamId,
+  });
+  // make team attack
+  round[actionTeamKey.curSide].side = GameConfig.ATTACK;
+  round[actionTeamKey.oppositeSide].side = GameConfig.DEFENCE;
+  // status
+  let newStatus = status;
+  if (isRoundsEmpty(rounds)) {
+    newStatus = "IN_PROGRESS";
+  }
+  //update
+  const updatedRounds = [...rounds, round];
+  return {
+    ...game,
+    rounds: updatedRounds,
+    status: newStatus,
+  } as GameData;
 }
 
 //------------------------------------
