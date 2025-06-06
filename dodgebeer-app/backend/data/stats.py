@@ -129,7 +129,7 @@ if __name__ == "__main__":
     args = sys.argv[1:]
 
     if not args:
-        print("Usage: python script.py game1.json game2.json ... [--sort hit|saves|fastest_save|first_turn_done] [--data data.json]")
+        print("Usage: python stats.py game1.json game2.json ... [--sort hit|saves|fastest_save|first_turn_done] [--data data.json]")
         sys.exit(1)
 
     sort_key = None
